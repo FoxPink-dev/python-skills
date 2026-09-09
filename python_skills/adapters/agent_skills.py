@@ -182,6 +182,9 @@ class AgentSkillsAdapter(AgentAdapter):
             # Generate Agent Skills compliant SKILL.md
             skill_md = _generate_skill_md(skill, content)
 
+            # Wrap with ownership markers for status/uninstall detection
+            skill_md = self._wrap_managed(skill_md, target_skill_file)
+
             # Write to target
             target_skill_dir.mkdir(parents=True, exist_ok=True)
             target_skill_file.write_text(skill_md, encoding="utf-8")
@@ -239,6 +242,7 @@ class AgentSkillsAdapter(AgentAdapter):
                             content = self.skills_registry.get_skill_content(skill.name)
                             if content:
                                 skill_md = _generate_skill_md(skill, content)
+                                skill_md = self._wrap_managed(skill_md, target_dir / "SKILL.md")
                                 target_dir.mkdir(parents=True, exist_ok=True)
                                 (target_dir / "SKILL.md").write_text(skill_md, encoding="utf-8")
                         result.added.append(str((target_dir / "SKILL.md").relative_to(self.project_root)))
@@ -253,9 +257,20 @@ class AgentSkillsAdapter(AgentAdapter):
                         content = self.skills_registry.get_skill_content(skill.name)
                         if content:
                             new_content = _generate_skill_md(skill, content)
-                            if current.strip() != new_content.strip():
+                            # Wrap with markers for comparison and writing
+                            new_content_wrapped = self._wrap_managed(new_content, skill_file)
+                            # Strip markers from current to compare raw content
+                            begin, end = self._get_markers(skill_file)
+                            current_raw = current
+                            if begin in current and end in current:
+                                start = current.find(begin) + len(begin)
+                                end_idx = current.find(end, start)
+                                if end_idx != -1:
+                                    current_raw = current[start:end_idx].strip()
+                            new_raw = new_content
+                            if current_raw.strip() != new_raw.strip():
                                 if not dry_run:
-                                    skill_file.write_text(new_content, encoding="utf-8")
+                                    skill_file.write_text(new_content_wrapped, encoding="utf-8")
                                 result.modified.append(str(skill_file.relative_to(self.project_root)))
                             else:
                                 result.skipped.append(str(skill_file.relative_to(self.project_root)))
@@ -270,29 +285,16 @@ class AgentSkillsAdapter(AgentAdapter):
         return result
 
     def uninstall(self, scope: str = "project", dry_run: bool = False) -> UninstallResult:
-        """Uninstall skills managed by python-skills."""
+        """Uninstall skills managed by python-skills.
+        
+        For shared directories (.agents/skills/), only removes the vendor-specific
+        native directory. The shared directory is preserved for other consumers.
+        """
         result = UninstallResult(success=True, target=self.target_name, scope=scope)
         target_path = self._get_scope_path(scope)
 
         try:
-            skills_dir = target_path / self.agent_skills_dir
-
-            if skills_dir.exists():
-                for item in skills_dir.iterdir():
-                    if item.is_dir():
-                        skill_file = item / "SKILL.md"
-                        if skill_file.exists():
-                            # Check ownership
-                            content = skill_file.read_text(encoding="utf-8")
-                            begin, end = self._get_markers(skill_file)
-                            if begin in content:
-                                if not dry_run:
-                                    shutil.rmtree(item)
-                                result.files_removed.append(
-                                    str(item.relative_to(self.project_root))
-                                )
-
-            # Clean native skills dir if different
+            # Remove vendor-specific native skills dir (e.g., .opencode/skills/)
             if self.native_skills_dir and self.native_skills_dir != self.agent_skills_dir:
                 native_dir = target_path / self.native_skills_dir
                 if native_dir.exists():
@@ -301,13 +303,51 @@ class AgentSkillsAdapter(AgentAdapter):
                             skill_file = item / "SKILL.md"
                             if skill_file.exists():
                                 content = skill_file.read_text(encoding="utf-8")
-                                begin, end = self._get_markers(skill_file)
+                            begin, _end = self._get_markers(skill_file)
+                            if begin in content:
+                                if not dry_run:
+                                    shutil.rmtree(item)
+                                result.files_removed.append(
+                                    str(item.relative_to(self.project_root))
+                                )
+
+            # For the shared .agents/skills/ dir: only remove if this target
+            # is the sole consumer. Check lock file for other consumers.
+            skills_dir = target_path / self.agent_skills_dir
+            if skills_dir.exists() and self.agent_skills_dir == ".agents/skills":
+                # Check if any other target still references .agents/skills/
+                other_consumers = self._count_other_consumers(scope)
+                if other_consumers > 0:
+                    # Other consumers exist — don't touch shared dir
+                    pass
+                else:
+                    # No other consumers — safe to remove shared dir
+                    for item in skills_dir.iterdir():
+                        if item.is_dir():
+                            skill_file = item / "SKILL.md"
+                            if skill_file.exists():
+                                content = skill_file.read_text(encoding="utf-8")
+                                begin, _end = self._get_markers(skill_file)
                                 if begin in content:
                                     if not dry_run:
                                         shutil.rmtree(item)
                                     result.files_removed.append(
                                         str(item.relative_to(self.project_root))
                                     )
+            elif skills_dir.exists():
+                # Non-shared agent_skills_dir — remove normally
+                for item in skills_dir.iterdir():
+                    if item.is_dir():
+                        skill_file = item / "SKILL.md"
+                        if skill_file.exists():
+                            content = skill_file.read_text(encoding="utf-8")
+                            begin, _end = self._get_markers(skill_file)
+                            if begin in content:
+                                if not dry_run:
+                                    shutil.rmtree(item)
+                                result.files_removed.append(
+                                    str(item.relative_to(self.project_root))
+                                )
 
             if not dry_run:
                 self._update_lock_state(scope)
@@ -317,6 +357,23 @@ class AgentSkillsAdapter(AgentAdapter):
             result.errors.append(str(e))
 
         return result
+
+    def _count_other_consumers(self, scope: str) -> int:
+        """Count how many other targets use the shared .agents/skills/ directory."""
+        # Known targets that consume .agents/skills/
+        shared_consumers = {
+            "opencode", "windsurf", "vscode", "gemini",
+            "roo", "codex", "goose", "jetbrains", "zed",
+        }
+        # Remove self from the count
+        other = shared_consumers - {self.target_name}
+        # Check which others are actually installed (have lock records)
+        count = 0
+        for consumer in other:
+            status = self.lock_manager.get_target_status(consumer)
+            if status and status.files:
+                count += 1
+        return count
 
     def status(self, scope: str = "project") -> StatusResult:
         """Get installation status."""
