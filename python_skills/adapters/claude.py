@@ -81,7 +81,7 @@ class ClaudeAdapter(AgentAdapter):
     def _install_skills(self, skills_dir: Path, dry_run: bool) -> list[str]:
         """Install canonical skills to .claude/skills/."""
         created = []
-        skills_root = Path(__file__).resolve().parent.parent.parent.parent / "skills"
+        skills_root = self.skills_registry.skills_root
 
         if not skills_root.exists():
             return created
@@ -346,7 +346,7 @@ alwaysApply: false
 
         try:
             # Reload canonical skills
-            skills_root = Path(__file__).resolve().parent.parent.parent.parent / "skills"
+            skills_root = self.skills_registry.skills_root
 
             # Update skills
             skills_dir = target_path / ".claude" / "skills"
@@ -471,6 +471,4 @@ alwaysApply: false
 
     def _update_lock_state(self, scope: str) -> None:
         """Update lock state after changes."""
-        self.lock_manager.update_canonical_hash(
-            Path(__file__).resolve().parent.parent.parent.parent / "skills"
-        )
+        self.lock_manager.update_canonical_hash(self.skills_registry.skills_root)

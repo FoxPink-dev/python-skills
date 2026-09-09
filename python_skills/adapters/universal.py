@@ -191,7 +191,13 @@ class UniversalAdapter(AgentAdapter):
             version="1.0.0"
         )
 
+    def _has_ownership_marker(self, path: Path) -> bool:
+        """Check if a file has our ownership markers."""
+        if not path.exists():
+            return False
+        content = path.read_text(encoding="utf-8")
+        begin, end = self._get_markers(path)
+        return begin in content and end in content
+
     def _update_lock_state(self, scope: str) -> None:
-        self.lock_manager.update_canonical_hash(
-            Path(__file__).resolve().parent.parent.parent.parent / "skills"
-        )
+        self.lock_manager.update_canonical_hash(self.skills_registry.skills_root)

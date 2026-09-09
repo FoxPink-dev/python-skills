@@ -403,6 +403,6 @@ class AgentSkillsAdapter(AgentAdapter):
 
     def _update_lock_state(self, scope: str) -> None:
         """Update lock state after changes."""
-        skills_root = Path(__file__).resolve().parent.parent.parent.parent / "skills"
+        skills_root = self.skills_registry.skills_root
         if skills_root.exists():
             self.lock_manager.update_canonical_hash(skills_root)

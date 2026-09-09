@@ -221,6 +221,6 @@ class AiderAdapter(AgentAdapter):
         )
 
     def _update_lock_state(self, scope: str) -> None:
-        skills_root = Path(__file__).resolve().parent.parent.parent.parent / "skills"
+        skills_root = self.skills_registry.skills_root
         if skills_root.exists():
             self.lock_manager.update_canonical_hash(skills_root)

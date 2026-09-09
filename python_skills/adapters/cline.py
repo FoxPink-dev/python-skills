@@ -329,6 +329,4 @@ class ClineAdapter(AgentAdapter):
         )
 
     def _update_lock_state(self, scope: str) -> None:
-        self.lock_manager.update_canonical_hash(
-            Path(__file__).resolve().parent.parent.parent.parent / "skills"
-        )
+        self.lock_manager.update_canonical_hash(self.skills_registry.skills_root)
