@@ -135,7 +135,47 @@ exclude_lines = [
 
 ---
 
-## Decision Rules
+## When NOT to Use
+
+| Scenario | Why | Better Alternative |
+|----------|-----|-------------------|
+| All tests in one directory | Hard to maintain at scale | Split unit/integration/e2e |
+| No markers | Can't run subsets | Add markers for test types |
+| Mixed unit/integration | Slow CI, flaky tests | Separate directories |
+| Over-engineered structure | Overhead for small projects | Keep simple until needed |
+
+### Common Failure Modes
+
+| Failure | Symptom | Fix |
+|---------|---------|-----|
+| No markers | Can't run subsets | Add `@pytest.mark.unit` etc. |
+| Mixed unit/integration | Slow CI, flaky tests | Separate directories |
+| Duplicate fixtures | Maintenance burden | Use `conftest.py` properly |
+| Test order dependencies | Flaky tests | Isolate tests, no shared state |
+| Missing `conftest.py` | Fixture not found | Add to appropriate directory |
+
+### Anti-Pattern
+
+```python
+# NEVER: All tests in one file
+# tests/test_all.py (5000 lines)
+
+# NEVER: No markers
+def test_unit():
+    ...
+def test_integration():
+    ...
+
+# BETTER: Organized structure
+tests/
+├── unit/
+│   ├── test_models.py
+│   └── test_services.py
+├── integration/
+│   ├── test_database.py
+│   └── test_api.py
+└── conftest.py
+```
 
 | Test Type | Location | Markers | Speed Target |
 |-----------|----------|---------|--------------|

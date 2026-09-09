@@ -3,28 +3,6 @@
 **Purpose**: Building and distributing Python packages.
 
 **When to use**: Publishing to PyPI, creating wheels, Docker images.
----
----
-name: engineering_packaging
-purpose: Building and distributing Python packages
-category: engineering
-triggers:
-  - packaging
-  - wheel
-  - sdist
-  - pypi
-  - twine
-  - build
-  - version
-  - docker
-dependencies:
-  - engineering/pyproject_toml.md
-  - engineering/project_structure.md
-  - engineering/dependency_management.md
-  - engineering/virtual_environments.md
-priority: primary
-estimated_tokens: 1800
----
 
 ## Core Rules
 

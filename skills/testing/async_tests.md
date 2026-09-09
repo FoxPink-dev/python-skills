@@ -179,7 +179,45 @@ async def test_task_group():
 
 ---
 
-## Decision Rules
+## When NOT to Use
+
+| Scenario | Why | Better Alternative |
+|----------|-----|-------------------|
+| Sync wrapper over async | Unnecessary complexity | Test sync directly |
+| `asyncio.run()` in tests | Event loop conflicts with pytest-asyncio | Use `@pytest.mark.asyncio` |
+| `time.sleep()` in async tests | Blocks event loop | Use `asyncio.sleep()` |
+| `@pytest_asyncio.fixture` for sync | Overhead without benefit | Use `@pytest.fixture` |
+| Testing sync code with async | Unnecessary complexity | Test sync directly |
+
+### Common Failure Modes
+
+| Failure | Symptom | Fix |
+|---------|---------|-----|
+| Missing `asyncio_mode = "auto"` | Tests skipped or not collected | Add to `pyproject.toml` |
+| `asyncio.run()` in tests | "Event loop is closed" error | Use `@pytest.mark.asyncio` |
+| `time.sleep()` in async | Blocks event loop, hangs | Use `asyncio.sleep()` |
+| Not awaiting mock | `assert_awaited` fails | Use `await mock()` |
+| Shared event loop state | Tests interfere with each other | Use `loop_scope="function"` |
+| Missing `pytest-asyncio` | `@pytest.mark.asyncio` ignored | Install + configure |
+
+### Anti-Pattern
+
+```python
+# NEVER: asyncio.run() in tests
+def test_async():
+    result = asyncio.run(async_function())  # Conflicts with pytest-asyncio
+
+# NEVER: time.sleep() in async tests
+@pytest.mark.asyncio
+async def test_timeout():
+    await asyncio.sleep(1)  # Blocks event loop
+
+# BETTER: Use pytest-asyncio properly
+@pytest.mark.asyncio
+async def test_proper():
+    result = await async_function()
+    assert result == "expected"
+```
 
 | Need | Pattern |
 |------|---------|

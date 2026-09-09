@@ -181,7 +181,7 @@ def mock_email_service() -> Mock:
 
 - Fixtures with side effects (no cleanup)
 - Over-mocking (mock everything, test nothing)
-- Mocking standard library (mock `requests`, not `json`)
+- Mocking stdlib you should use directly (`json`, `os.path`, `pathlib`)
 - Fixtures that depend on test order
 - Complex fixture chains (>3 levels)
 

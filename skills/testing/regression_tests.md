@@ -101,7 +101,44 @@ def test_refactor_order_calculation_preserves_results():
 
 ---
 
-## Decision Rules
+## When NOT to Use
+
+| Scenario | Why | Better Alternative |
+|----------|-----|-------------------|
+| Deleting regression tests | Bug may reappear | Keep for history |
+| Tests that don't reproduce bug | False confidence | Write minimal reproduction |
+| Overly complex regression tests | Hard to maintain | Keep minimal |
+| Regression test for every change | Noise, slow suite | Focus on bug fixes |
+
+### Common Failure Modes
+
+| Failure | Symptom | Fix |
+|---------|---------|-----|
+| Deleting regression test | Bug reappears later | Keep test, mark as `@pytest.mark.regression` |
+| Test doesn't reproduce bug | False confidence | Write exact reproduction case |
+| Overly complex test | Hard to maintain | Keep minimal, focused |
+| Missing bug reference | Can't trace origin | Include issue/PR number in docstring |
+| Not running regression suite | Regressions slip through | CI must run regression tests |
+
+### Anti-Pattern
+
+```python
+# NEVER: Delete regression test after fix
+# def test_issue_123_fixed():  # DELETED - bug reappears!
+
+# NEVER: Test that doesn't reproduce bug
+def test_issue_123():
+    result = process("normal input")  # Bug was with special input
+    assert result == "expected"
+
+# BETTER: Minimal reproduction
+def test_issue_123_normalizes_email():
+    """Regression: Issue #123 - uppercase email caused duplicate"""
+    user = create_user("USER@EXAMPLE.COM")  # Exact trigger
+    assert user.email == "user@example.com"
+    with pytest.raises(ConflictError):
+        create_user("user@example.com")  # Verify fix
+```
 
 | Trigger | Action |
 |---------|--------|

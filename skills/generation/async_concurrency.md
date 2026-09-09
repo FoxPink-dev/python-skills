@@ -197,7 +197,43 @@ async def main():
 
 ---
 
-## Decision Rules
+## When NOT to Use
+
+| Scenario | Why | Better Alternative |
+|----------|-----|-------------------|
+| CPU-bound work | GIL prevents parallelism | Use `multiprocessing` |
+| Simple scripts | Overhead without benefit | Use synchronous code |
+| Blocking I/O in async | Defeats purpose | Use `asyncio.to_thread` |
+| `asyncio.run()` inside async | Nested event loops | Use `asyncio.create_task` |
+
+### Common Failure Modes
+
+| Failure | Symptom | Fix |
+|---------|---------|-----|
+| Blocking call in async | Event loop blocked | Use `asyncio.to_thread` |
+| Not tracking tasks | Memory leaks | Store task references |
+| Catching `CancelledError` without re-raise | Broken cancellation | Always re-raise |
+| `asyncio.run()` inside async | Nested event loops | Use `asyncio.create_task` |
+| Mixing `asyncio` with `threading` | Deadlocks, race conditions | Use `asyncio` primitives |
+
+### Anti-Pattern
+
+```python
+# NEVER: Blocking call in async
+async def fetch():
+    import requests
+    return requests.get(url)  # Blocks event loop!
+
+# NEVER: asyncio.run() inside async
+async def main():
+    await asyncio.run(other())  # Nested event loops!
+
+# BETTER: Use async libraries
+async def fetch():
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as resp:
+            return await resp.text()
+```
 
 | Situation | Pattern |
 |-----------|---------|
@@ -257,7 +293,6 @@ async def run_server():
 
 - `asyncio.run()` inside async function (nested event loops)
 - Blocking calls in async functions (use `to_thread`)
-- `asyncio.sleep(0)` for yielding (use `await asyncio.shield` or proper design)
 - Creating tasks without tracking (memory leaks)
 - Catching `CancelledError` without re-raising
 - Mixing `asyncio` with `threading` primitives

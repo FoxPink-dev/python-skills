@@ -92,7 +92,50 @@ def serve_file(user_path: str, root: Path) -> FileResponse:
 
 ---
 
-## Decision Rules
+## When NOT to Use
+
+| Scenario | Why | Better Alternative |
+|----------|-----|-------------------|
+| Direct write to final path | Partial reads on crash | Atomic write (temp + rename) |
+| No file size limit | DoS via huge files | Set `max_size` parameter |
+| World-writable files | Security risk | `chmod 0o600` or `0o640` |
+| Predictable temp file names | Race condition / symlink attack | Use `tempfile` module |
+| `open()` without encoding | Platform-dependent default | Specify `encoding="utf-8"` |
+
+### Common Failure Modes
+
+| Failure | Symptom | Fix |
+|---------|---------|-----|
+| Direct write to final path | Partial reads on crash | Atomic write (temp + rename) |
+| No file size limit | DoS via huge files | Set `max_size` parameter |
+| World-writable files | Other users can modify | `chmod 0o600` |
+| Predictable temp names | Race condition | Use `tempfile.NamedTemporaryFile` |
+| Missing encoding | UnicodeDecodeError on read | Specify `encoding="utf-8"` |
+| Not closing file handles | Resource leak | Use `with` statement |
+| TOCTOU race | File changes between check and use | Open immediately, handle errors |
+
+### Anti-Pattern
+
+```python
+# NEVER: Direct write (partial reads on crash)
+with open("config.json", "w") as f:
+    json.dump(config, f)  # Crash = corrupt file
+
+# NEVER: World-writable
+path.write_text(data)
+path.chmod(0o666)  # Anyone can modify
+
+# NEVER: Predictable temp name
+temp_path = Path("/tmp/myapp_data.txt")  # Symlink attack possible
+
+# BETTER: Atomic write
+def atomic_write(path: Path, content: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.NamedTemporaryFile(mode="w", dir=path.parent, delete=False) as tmp:
+        tmp.write(content)
+        tmp_path = Path(tmp.name)
+    tmp_path.replace(path)
+```
 
 | Operation | Pattern |
 |-----------|---------|

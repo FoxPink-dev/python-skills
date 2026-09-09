@@ -3,25 +3,6 @@
 **Purpose**: Prevent command injection when executing subprocesses.
 
 **When to use**: Any `subprocess` usage.
----
----
-name: security_command_injection
-purpose: Prevent command injection when executing subprocesses
-category: security
-triggers:
-  - subprocess
-  - command injection
-  - shell
-  - os.system
-  - popen
-  - exec
-dependencies:
-  - stdlib/subprocess.md
-  - security/path_traversal.md
-  - security/input_validation.md
-priority: primary
-estimated_tokens: 1600
----
 
 ## Core Rules
 
@@ -105,7 +86,46 @@ def run_legacy_command(cmd_string: str) -> subprocess.CompletedProcess:
 
 ---
 
-## Decision Rules
+## When NOT to Use
+
+| Scenario | Why | Better Alternative |
+|----------|-----|-------------------|
+| `shell=True` with user input | Command injection | Use list form |
+| `os.system()` | No output control, shell injection | Use `subprocess.run()` |
+| `os.popen()` | Deprecated, no control | Use `subprocess.Popen()` |
+| User input in subprocess args | Injection via metacharacters | Validate against allowlist |
+| Inheriting full environment | Secrets leak to child | Clean env with allowlist |
+
+### Common Failure Modes
+
+| Failure | Symptom | Fix |
+|---------|---------|-----|
+| `shell=True` with user input | Command injection | Use list form |
+| String command without `shlex` | Space parsing error | Use `shlex.split()` |
+| Inheriting `PATH` | Child uses attacker's binary | Set explicit `PATH` |
+| `subprocess.run` without timeout | Hangs forever | Set `timeout=` parameter |
+| Unescaped shell metacharacters | Injection via `;`, `|`, `$()` | Use list form, no shell |
+| `check=True` with shell | Exception with shell output | Use `check=False` + manual check |
+
+### Anti-Pattern
+
+```python
+# NEVER: shell=True with user input
+subprocess.run(f"echo {user_input}", shell=True)
+subprocess.run("ls " + user_dir, shell=True)
+
+# NEVER: os.system()
+os.system(f"ping {host}")
+
+# NEVER: Unquoted arguments
+subprocess.run(["process", filename])  # Correct: list form handles spaces
+
+# BETTER: Explicit validation
+ALLOWED_HOSTS = {"example.com", "api.example.com"}
+if host not in ALLOWED_HOSTS:
+    raise ValueError(f"Invalid host: {host}")
+subprocess.run(["ping", "-c", "4", host])
+```
 
 | Need | Pattern |
 |------|---------|

@@ -1,25 +1,3 @@
----
-name: engineering_database
-purpose: Database access patterns and best practices
-category: engineering
-triggers:
-  - database
-  - sql
-  - query
-  - orm
-  - sqlite
-  - postgresql
-  - mysql
-  - migration
-dependencies:
-  - security/sql_injection.md
-  - engineering/configuration.md
-  - generation/async_concurrency.md
-  - generation/error_handling.md
-  - testing/organization.md
-priority: primary
-estimated_tokens: 2200
----
 # Engineering: Database
 
 **Purpose**: Database access patterns and best practices.
@@ -164,7 +142,46 @@ async with async_session() as session:
 
 ---
 
-## Decision Rules
+## When NOT to Use
+
+| Scenario | Why | Better Alternative |
+|----------|-----|-------------------|
+| asyncpg for simple scripts | Overhead, complex setup | Use `sqlite3` or `psycopg` |
+| SQLAlchemy for hot paths | ORM overhead | Use raw driver |
+| Connection pooling for one-shot CLI | Unnecessary overhead | Use direct connection |
+| ORM for complex reporting queries | N+1, slow | Use raw SQL |
+
+### Common Failure Modes
+
+| Failure | Symptom | Fix |
+|---------|---------|-----|
+| String interpolation in SQL | SQL injection | Use parameterized queries |
+| N+1 queries | Slow performance | Use joins or batch loading |
+| Committing in loops | Slow, partial commits | Batch commit |
+| Long-running transactions | Locks, timeouts | Keep transactions short |
+| No connection pooling | Connection exhaustion | Use pool |
+| Global connection | Thread safety issues | Use DI or thread-local |
+
+### Anti-Pattern
+
+```python
+# NEVER: String interpolation in SQL
+cursor.execute(f"SELECT * FROM users WHERE email = '{email}'")  # INJECTION!
+
+# NEVER: N+1 queries
+users = await conn.fetch("SELECT * FROM users")
+for user in users:
+    orders = await conn.fetch("SELECT * FROM orders WHERE user_id = $1", user["id"])
+
+# NEVER: Committing in loops
+for item in items:
+    await conn.execute("INSERT INTO ...")
+    await conn.commit()  # Slow!
+
+# BETTER: Batch operations
+await conn.executemany("INSERT INTO ... VALUES ($1, $2)", items)
+await conn.commit()  # Once
+```
 
 | Need | Approach |
 |------|----------|

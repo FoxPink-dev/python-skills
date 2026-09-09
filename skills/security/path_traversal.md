@@ -109,7 +109,50 @@ def read_file_safe(path: Path, base: Path) -> bytes:
 
 ---
 
-## Decision Rules
+## When NOT to Use
+
+| Scenario | Why | Better Alternative |
+|----------|-----|-------------------|
+| `os.path.join` with user input | May escape base directory | `pathlib` + `is_relative_to` |
+| `Path(user_input)` directly | Traversal possible | Resolve + validate |
+| Serving files from user path | Directory traversal | Validate against root |
+| Extracting archives without check | Zip slip / tar path traversal | Validate each member |
+| Symlinks without validation | Symlink traversal | Reject or validate target |
+
+### Common Failure Modes
+
+| Failure | Symptom | Fix |
+|---------|---------|-----|
+| `Path(user_input)` without resolve | Traversal via `../` | Use `.resolve()` first |
+| URL-encoded traversal | `%2e%2e%2f` bypass | Decode before validate |
+| Double-dot traversal | `....//` bypass | Normalize path first |
+| Symlink traversal | Path escapes via symlink | Validate final target |
+| Archive extraction without check | Zip slip | Validate all members |
+| Missing null byte check | `\0` truncation in C | Reject null bytes |
+| Windows path separators | `..\\..\\` bypass | Normalize to forward slash |
+
+### Anti-Pattern
+
+```python
+# NEVER: Path without validation
+path = Path(user_input)
+return path.read_text()
+
+# NEVER: os.path.join with user input
+path = os.path.join(base, user_input)  # Can escape base
+
+# NEVER: Archive extraction without validation
+with zipfile.ZipFile(archive) as zf:
+    zf.extractall(dest)  # Zip slip possible
+
+# BETTER: Resolve and validate
+def safe_path(user_input: str, base: Path) -> Path:
+    base = base.resolve()
+    requested = (base / user_input).resolve()
+    if not requested.is_relative_to(base):
+        raise ValueError("Path traversal attempt")
+    return requested
+```
 
 | Operation | Protection |
 |-----------|------------|

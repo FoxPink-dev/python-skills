@@ -103,7 +103,50 @@ def test_compatibility(os: str, python: str):
 
 ---
 
-## Decision Rules
+## When NOT to Use
+
+| Scenario | Why | Better Alternative |
+|----------|-----|-------------------|
+| Few cases (<3) | Overhead without benefit | Write separate tests |
+| Complex logic in parametrize | Hard to debug | Use fixtures |
+| Unrelated tests together | Hard to maintain | Separate test functions |
+| Exponential combinations | Slow suite, hard to read | Reduce combinations |
+
+### Common Failure Modes
+
+| Failure | Symptom | Fix |
+|---------|---------|-----|
+| Too many combinations | Slow suite, hard to read | Reduce, use `ids` |
+| Complex logic in parametrize | Hard to debug | Use fixtures instead |
+| Missing `ids` | Unclear test output | Add descriptive IDs |
+| Cartesian product explosion | 100s of tests | Reduce combinations |
+| Parametrizing unrelated tests | Hard to maintain | Separate test functions |
+
+### Anti-Pattern
+
+```python
+# NEVER: Too many combinations
+@pytest.mark.parametrize("a", range(10))
+@pytest.mark.parametrize("b", range(10))
+@pytest.mark.parametrize("c", range(10))
+def test_all(a, b, c):  # 1000 tests!
+    ...
+
+# NEVER: Complex logic in parametrize
+@pytest.mark.parametrize("input", [
+    complex_function_1(),
+    complex_function_2(),
+    # Hard to debug when this fails
+])
+
+# BETTER: Focused parametrize with IDs
+@pytest.mark.parametrize("input,expected", [
+    pytest.param("valid@example.com", True, id="valid-email"),
+    pytest.param("invalid", False, id="no-at-sign"),
+], ids=lambda x: x[1] and "valid" or "invalid")
+def test_email_validation(input, expected):
+    assert is_valid_email(input) == expected
+```
 
 | Situation | Pattern |
 |-----------|---------|

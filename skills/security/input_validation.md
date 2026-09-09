@@ -125,7 +125,48 @@ safe_html = escape(user_input)
 
 ---
 
-## Decision Rules
+## When NOT to Use
+
+| Scenario | Why | Better Alternative |
+|----------|-----|-------------------|
+| Blocklist validation | Incomplete, bypasses new patterns | Allowlist validation |
+| Client-side validation only | Can be bypassed | Server-side validation |
+| Validation after processing | Injection may succeed before check | Validate at boundary |
+| `str.isnumeric()` for validation | Unicode confusion (e.g., `²`) | Use regex or Pydantic |
+| Manual string parsing | Error-prone, no type safety | Use Pydantic / argparse |
+
+### Common Failure Modes
+
+| Failure | Symptom | Fix |
+|---------|---------|-----|
+| Blocklist validation | Bypassed by new patterns | Use allowlist |
+| No size limits | DoS via huge input | Set max length/size |
+| Validation in wrong location | Injection succeeds before check | Validate at boundary |
+| Missing Unicode normalization | `café` vs `cafe\u0301` | Normalize with `unicodedata` |
+| `str.isdigit()` accepts `²` | Unicode confusion | Use `re.match(r'^\d+$')` |
+| Not validating error messages | Leaks internal info | Generic error messages |
+
+### Anti-Pattern
+
+```python
+# NEVER: Blocklist validation
+def validate_email(email: str) -> bool:
+    return "@" in email  # Missing: no domain check, no length limit
+
+# NEVER: Client-side only
+# HTML: <input type="email" required>  # No server validation
+
+# NEVER: No size limits
+def process(data: str) -> None:
+    # data could be gigabytes
+    result = data.upper()
+
+# BETTER: Allowlist + size limit + boundary
+from pydantic import BaseModel, EmailStr, Field
+class Request(BaseModel):
+    email: EmailStr  # Built-in validation
+    name: str = Field(max_length=100)
+```
 
 | Input Type | Validation |
 |------------|------------|

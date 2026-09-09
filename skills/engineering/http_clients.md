@@ -111,30 +111,26 @@ except httpx.HTTPStatusError as e:
 
 ### Retry Logic
 ```python
-from httpx import Retry
-from httpx._transports.default import RetryStrategy
-
-# Built-in retry (httpx 0.25+)
-transport = httpx.HTTPTransport(
-    retries=Retry(
-        total=3,
-        backoff_factor=0.5,
-        status_forcelist=[429, 500, 502, 503, 504],
-        allowed_methods=["HEAD", "GET", "OPTIONS"],
-    )
-)
+# Simple retry via transport (httpx 0.25+)
+transport = httpx.HTTPTransport(retries=3)
 client = httpx.Client(transport=transport)
 
-# Or use tenacity for complex retry
-from tenacity import retry, stop_after_attempt, wait_exponential
+# Async variant
+async_transport = httpx.AsyncHTTPTransport(retries=3)
+async_client = httpx.AsyncClient(transport=async_transport)
+
+# For complex retry (backoff, status filtering) use tenacity
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
 @retry(
     wait=wait_exponential(multiplier=1, min=1, max=10),
     stop=stop_after_attempt(3),
     retry=retry_if_exception_type(httpx.RequestError),
 )
-async def fetch_with_retry(client: httpx.AsyncClient, url: str) -> httpx.Response:
-    return await client.get(url)
+def fetch_with_retry(client: httpx.Client, url: str) -> httpx.Response:
+    resp = client.get(url)
+    resp.raise_for_status()
+    return resp
 ```
 
 ### Authentication

@@ -105,7 +105,42 @@ finally:        # always runs
 
 ---
 
-## Decision Rules
+## When NOT to Use
+
+| Scenario | Why | Better Alternative |
+|----------|-----|-------------------|
+| `for/else` for search | Confusing, rare usage | Use `any()` / `next()` with default |
+| `while True` with break | When `for` works | Use `for` or `itertools` |
+| Deep nested ternary | Unreadable | Use `if/elif/else` |
+| `match` on simple values | Overhead without benefit | Use `if/elif/else` |
+
+### Common Failure Modes
+
+| Failure | Symptom | Fix |
+|---------|---------|-----|
+| `for/else` confusion | `else` runs when expected not to | Remember: `else` runs on normal completion (no `break`) |
+| `while True` with break | Infinite loop if break never hit | Add proper exit condition |
+| Deep nesting | Unreadable, hard to test | Refactor to functions/early returns |
+| Unhandled pattern in `match` | `MatchError` at runtime | Add wildcard `_` case |
+
+### Anti-Pattern
+
+```python
+# NEVER: Deep nesting
+if condition1:
+    if condition2:
+        if condition3:
+            do_something()
+
+# BETTER: Early returns
+if not condition1:
+    return
+if not condition2:
+    return
+if not condition3:
+    return
+do_something()
+```
 
 | Situation | Construct |
 |-----------|-----------|

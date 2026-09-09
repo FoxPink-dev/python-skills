@@ -131,7 +131,50 @@ async def action(
 
 ---
 
-## Decision Rules
+## When NOT to Use
+
+| Scenario | Why | Better Alternative |
+|----------|-----|-------------------|
+| Client-side authorization | Trivially bypassable | Server-side enforcement |
+| Checking permissions after data fetch | Data leak via error messages | Filter at query level |
+| Hardcoded role checks | Inflexible, missed permissions | Permission-based model |
+| No audit logging | Can't trace breaches | Log all auth events |
+| JWT without expiration | Permanent token validity | Short-lived tokens + refresh |
+
+### Common Failure Modes
+
+| Failure | Symptom | Fix |
+|---------|---------|-----|
+| Client-side auth only | Unauthorized access | Server-side enforcement |
+| Missing authorization on endpoint | Anyone can access | Check every endpoint |
+| Data fetched before auth check | Data leak via error messages | Filter at query level |
+| JWT without expiration | Stolen token valid forever | Short-lived tokens + refresh |
+| No CSRF protection | Cross-site request forgery | CSRF tokens for state changes |
+| Hardcoded role checks | Missed permissions, inflexible | Permission-based model |
+| Missing audit logging | Can't trace breaches | Log all auth events |
+
+### Anti-Pattern
+
+```python
+# NEVER: Client-side only
+# JavaScript: if (user.role === "admin") { showAdmin(); }
+
+# NEVER: Check after data fetch
+def get_profile(user_id):
+    user = db.get_user(user_id)  # Data leaked!
+    if not current_user.can_access(user_id):
+        raise Forbidden()
+    return user
+
+# NEVER: JWT without expiration
+token = jwt.encode({"user_id": 1}, secret)  # No expiration
+
+# BETTER: Server-side with query filter
+def get_profile(user_id, current_user):
+    if not current_user.can_access(user_id):
+        raise Forbidden()
+    return db.get_user(user_id, owner_id=current_user.id)  # Filtered
+```
 
 | Boundary | Enforcement |
 |----------|-------------|

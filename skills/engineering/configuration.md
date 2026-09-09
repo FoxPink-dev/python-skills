@@ -48,18 +48,32 @@ class RedisConfig:
 import os
 from dataclasses import fields
 
+from typing import get_type_hints
+
 def load_from_env(config: Config, prefix: str = "APP_") -> Config:
     """Update config from environment variables."""
+    hints = get_type_hints(config)  # Resolves string annotations to actual types
     for f in fields(config):
         env_key = f"{prefix}{f.name.upper()}"
         if env_key in os.environ:
             value = os.environ[env_key]
+            field_type = hints.get(f.name, str)
+            # Handle Optional[X] → extract inner type
+            origin = getattr(field_type, "__origin__", None)
+            if origin is type(None):
+                continue
+            if hasattr(field_type, "__args__"):
+                # Optional[X] = Union[X, None]
+                args = [a for a in field_type.__args__ if a is not type(None)]
+                field_type = args[0] if args else str
             # Type conversion
-            if f.type == bool:
+            if field_type is bool:
                 value = value.lower() in ("1", "true", "yes", "on")
-            elif f.type == int:
+            elif field_type is int:
                 value = int(value)
-            elif f.type == list[str]:
+            elif field_type is float:
+                value = float(value)
+            elif field_type is list[str]:
                 value = value.split(",")
             setattr(config, f.name, value)
     return config

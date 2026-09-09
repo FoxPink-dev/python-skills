@@ -58,11 +58,14 @@ dependencies = [
 ### For Applications (Not Libraries)
 ```bash
 # uv (fast, modern)
-uv pip compile pyproject.toml -o requirements.txt
-uv sync
+uv lock  # Creates uv.lock
+uv sync  # Installs from lock file
+
+# Or generate requirements.txt
+uv pip compile requirements.in -o requirements.txt
 
 # pip-tools
-pip-compile pyproject.toml -o requirements.txt
+pip-compile requirements.in -o requirements.txt
 pip-sync requirements.txt
 
 # poetry
@@ -126,7 +129,39 @@ src/
 
 ---
 
-## Decision Rules
+## When NOT to Use
+
+| Scenario | Why | Better Alternative |
+|----------|-----|-------------------|
+| Vendoring as first choice | Maintenance burden | Use package manager |
+| Pinning exact versions in libraries | Breaks user's dependency resolution | Use compatible ranges |
+| Adding dep for single function | Dependency overhead | Copy code (with license) |
+| No lock file for applications | Non-reproducible builds | Use lock file |
+
+### Common Failure Modes
+
+| Failure | Symptom | Fix |
+|---------|---------|-----|
+| Adding dep for trivial functionality | Dependency bloat | Use stdlib or copy code |
+| Pinning exact versions in libraries | Dependency conflicts | Use compatible ranges |
+| No upper bounds | Breaking changes | Add upper bounds |
+| Ignoring security advisories | Vulnerable code | Run `pip-audit` regularly |
+| Transitive dependency hell | Conflicts, bloat | Audit with `pipdeptree` |
+
+### Anti-Pattern
+
+```python
+# NEVER: Adding dep for single function
+# Instead of: from dateutil import parser
+# Use: datetime.fromisoformat() (Python 3.7+)
+
+# NEVER: Pinning exact versions in library
+# pyproject.toml
+dependencies = ["requests==2.31.0"]  # Breaks user's deps
+
+# BETTER: Compatible ranges
+dependencies = ["requests>=2.31,<3"]
+```
 
 | Situation | Action |
 |-----------|--------|

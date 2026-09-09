@@ -154,7 +154,7 @@ def test_process(value, expected):
 ## Validation Considerations
 
 - CI fails if coverage drops below threshold
-- `pytest --cov-fail-under=80 --cov-branch --cov-fail-under-branch=75`
+- `pytest --cov-branch --cov-fail-under=80` (single threshold for branch+line combined)
 - Track coverage trends over time
 - Focus on branch coverage for critical logic
 

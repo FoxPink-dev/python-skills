@@ -155,7 +155,48 @@ class Car:
 
 ---
 
-## Decision Rules
+## When NOT to Use
+
+| Scenario | Why | Better Alternative |
+|----------|-----|-------------------|
+| Deep inheritance chains | Fragile, hard to maintain | Use composition |
+| Multiple inheritance without clear design | Diamond problem | Use mixins or composition |
+| `__del__` for cleanup | Unreliable, may not run | Use context managers |
+| Properties with side effects | Surprising behavior | Keep properties pure |
+| `type()` for type checks | Fragile, no subclass support | Use `isinstance()` |
+
+### Common Failure Modes
+
+| Failure | Symptom | Fix |
+|---------|---------|-----|
+| Deep inheritance | Fragile, hard to maintain | Use composition |
+| Mutable class attributes | Shared state across instances | Use instance attributes |
+| Missing `super().__init__()` | Parent not initialized | Always call `super()` |
+| `__eq__` without `__hash__` | Unhashable instances | Define both or use `frozen=True` |
+| Properties with side effects | Surprising behavior | Keep properties pure |
+
+### Anti-Pattern
+
+```python
+# NEVER: Deep inheritance
+class A:
+    def method(self): ...
+class B(A):
+    def method(self): ...
+class C(B):
+    def method(self): ...
+class D(C):  # 4 levels deep!
+    def method(self): ...
+
+# NEVER: Mutable class attribute
+class User:
+    roles = []  # Shared across ALL instances!
+    
+# BETTER: Composition
+class User:
+    def __init__(self):
+        self.roles = []  # Instance attribute
+```
 
 | Situation | Pattern |
 |-----------|---------|

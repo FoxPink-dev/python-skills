@@ -109,7 +109,45 @@ class Settings(BaseSettings):
 
 ---
 
-## Decision Rules
+## When NOT to Use
+
+| Scenario | Why | Better Alternative |
+|----------|-----|-------------------|
+| Secrets in code | Version control leaks | Environment variables |
+| Secrets in Docker images | Image layers persist secrets | Build-time secrets / mounts |
+| Single secret without rotation | Compromise = permanent access | Key rotation strategy |
+| Secrets in URLs | Logged in access logs | Use headers |
+| `.env` committed to git | Secret in version control | `.gitignore` + CI secrets |
+
+### Common Failure Modes
+
+| Failure | Symptom | Fix |
+|---------|---------|-----|
+| Secrets in code | Git history leak | Use env vars / secret manager |
+| Secrets in logs | Credential exposure | Sanitize log output |
+| Secrets in Docker | Image layer leak | Use `--mount=type=secret` |
+| Single key rotation | Old token still valid | Multi-key rotation |
+| `.env` committed | Secret in git history | Rotate + rewrite history |
+| Secrets in URLs | Logged in access logs | Use `Authorization` header |
+
+### Anti-Pattern
+
+```python
+# NEVER: Hardcoded secrets
+API_KEY = "sk_live_abc123"  # Leaked in git
+
+# NEVER: Logging secrets
+logger.info(f"Connecting with key: {api_key}")
+
+# NEVER: Secrets in URLs
+requests.get(f"https://api.example.com?key={api_key}")
+
+# BETTER: Environment + secret manager
+from pydantic_settings import BaseSettings
+class Settings(BaseSettings):
+    api_key: str
+    model_config = SettingsConfigDict(env_file=".env")
+```
 
 | Environment | Approach |
 |-------------|----------|

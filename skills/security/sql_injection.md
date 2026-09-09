@@ -102,7 +102,47 @@ def query_table(table: str, column: str, value: str):
 
 ---
 
-## Decision Rules
+## When NOT to Use
+
+| Scenario | Why | Better Alternative |
+|----------|-----|-------------------|
+| ORM `filter()` for dynamic WHERE | Complex dynamic queries bypass ORM | Raw SQL with parameters |
+| String formatting for identifiers | Parameterized queries don't work for table/column names | Allowlist validation |
+| `LIKE` with user input | `%` and `_` are wildcards | Escape LIKE meta-characters |
+| `ORDER BY` with user input | Can't parameterize column names | Allowlist columns |
+| `IN` clause with empty list | `WHERE id IN ()` is invalid SQL | Handle empty list separately |
+
+### Common Failure Modes
+
+| Failure | Symptom | Fix |
+|---------|---------|-----|
+| f-string in SQL | SQL injection | Use parameterized queries |
+| `.format()` in SQL | SQL injection | Use parameterized queries |
+| LIKE with unescaped `%` | Incorrect filtering | Escape `%` → `%%` in LIKE |
+| Empty `IN ()` clause | SQL syntax error | Handle empty list before query |
+| Dynamic column without validation | SQL injection via ORDER BY | Allowlist valid columns |
+| ORM `.raw()` with string format | SQL injection | Use ORM parameters |
+
+### Anti-Pattern
+
+```python
+# NEVER: String formatting in SQL
+cursor.execute(f"SELECT * FROM users WHERE email = '{email}'")
+cursor.execute("SELECT * FROM users WHERE email = '{}'".format(email))
+
+# NEVER: Unparameterized LIKE
+cursor.execute("SELECT * FROM users WHERE name LIKE '%{}%'".format(name))
+# Should be:
+cursor.execute("SELECT * FROM users WHERE name LIKE %s", [f"%{name}%"])
+
+# NEVER: Dynamic ORDER BY without validation
+cursor.execute(f"SELECT * FROM users ORDER BY {column}")
+# Should be:
+ALLOWED_COLUMNS = {"name", "email", "created_at"}
+if column not in ALLOWED_COLUMNS:
+    raise ValueError("Invalid column")
+cursor.execute(f"SELECT * FROM users ORDER BY {column}")
+```
 
 | Query Type | Safe Pattern |
 |------------|--------------|

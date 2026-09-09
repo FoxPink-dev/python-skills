@@ -97,7 +97,40 @@ def safe_hook(d):
 
 ---
 
-## Decision Rules
+## When NOT to Use
+
+| Scenario | Why | Better Alternative |
+|----------|-----|-------------------|
+| Pickle for cross-process IPC | Shared memory/mmap faster, no exec risk | `multiprocessing.shared_memory` |
+| Pickle for cache | Slow, deserialization RCE risk | `json` or `msgpack` |
+| YAML for config | YAML parsing is complex, `yaml.safe_load()` limits | TOML (`tomllib`) |
+| `shelve` for database | Uses pickle internally, no concurrent access | `sqlite3` |
+| `marshal` for bytecode | CPython internal, no stability guarantee | Don't use directly |
+
+### Common Failure Modes
+
+| Failure | Symptom | Fix |
+|---------|---------|-----|
+| `yaml.load()` without SafeLoader | Arbitrary code execution | Use `yaml.safe_load()` |
+| Pickle on untrusted data | RCE via crafted payload | Use JSON/msgpack |
+| `yaml.FullLoader` still unsafe | Can instantiate arbitrary objects | Use `yaml.SafeLoader` |
+| Signing pickle data | Key compromise = RCE | Avoid pickle entirely for external data |
+| `json.loads` with deep nesting | DoS via stack overflow | Limit recursion depth |
+| Custom `object_hook` instantiating | RCE via crafted JSON | Only transform data types, no instantiation |
+
+### Anti-Pattern
+
+```python
+# NEVER: Pickle for any data that may be tampered with
+import pickle
+data = pickle.loads(untrusted_bytes)  # Can execute arbitrary code
+
+# NEVER: yaml.load with default loader
+data = yaml.load(untrusted_string)  # Uses FullLoader by default
+
+# NEVER: yaml.FullLoader (still unsafe)
+data = yaml.load(untrusted_string, Loader=yaml.FullLoader)  # Can create objects
+```
 
 | Format | Trusted Internal | Untrusted External |
 |--------|------------------|-------------------|

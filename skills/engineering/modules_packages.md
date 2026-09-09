@@ -151,7 +151,41 @@ def load_plugins(entry_point: str) -> list[Plugin]:
 
 ---
 
-## Decision Rules
+## When NOT to Use
+
+| Scenario | Why | Better Alternative |
+|----------|-----|-------------------|
+| `import *` | Pollutes namespace, unclear deps | Explicit imports |
+| Deep relative imports | Hard to read, fragile | Use absolute imports |
+| `sys.path` modification | Non-portable, fragile | Use proper packaging |
+| Dynamic imports for perf-critical paths | Import overhead | Use static imports |
+
+### Common Failure Modes
+
+| Failure | Symptom | Fix |
+|---------|---------|-----|
+| `import *` | Namespace pollution, unclear deps | Explicit imports |
+| Circular imports | `ImportError` | Refactor to third module |
+| `sys.path` hacking | Non-portable, fragile | Use proper packaging |
+| Import side effects | Unexpected behavior on import | Keep imports clean |
+| Deep relative imports | Hard to read, fragile | Use absolute imports |
+
+### Anti-Pattern
+
+```python
+# NEVER: import * from module
+from module import *  # What's imported? Nobody knows
+
+# NEVER: sys.path modification
+import sys
+sys.path.insert(0, "/path/to/package")  # Non-portable
+
+# NEVER: Deep relative imports
+from ... import top_level  # Hard to read
+
+# BETTER: Absolute imports
+from package.module import Class
+```
 
 | Situation | Approach |
 |-----------|----------|

@@ -3,27 +3,6 @@
 **Purpose**: Manage security risks from third-party dependencies.
 
 **When to use**: Adding dependencies, updating, CI/CD pipeline.
----
----
-name: security_dependency_risks
-purpose: Manage security risks from third-party dependencies
-category: security
-triggers:
-  - dependency
-  - vulnerability
-  - supply chain
-  - pip-audit
-  - safety
-  - lock file
-  - transitive
-dependencies:
-  - engineering/dependency_management.md
-  - engineering/pyproject_toml.md
-  - engineering/virtual_environments.md
-  - engineering/packaging.md
-priority: primary
-estimated_tokens: 1700
----
 
 ## Core Rules
 
@@ -217,39 +196,6 @@ def scan_dependencies(requirements_path: Path) -> dict:
 
 def has_critical_vulns(results: dict) -> bool:
     return len(results.get("critical", [])) > 0 or len(results.get("high", [])) > 0
-```
-
----
-
-## Decision Rules
-
-| Risk Level | Action |
-|------------|--------|
-| Critical vulnerability | Update immediately, emergency deploy |
-| High vulnerability | Update within 24-48 hours |
-| Medium vulnerability | Update within week |
-| Low vulnerability | Next scheduled update |
-| Unmaintained dependency | Plan replacement |
-| License conflict | Replace immediately |
-
----
-
-## Preferred Patterns
-
-```bash
-# CI Pipeline
-# 1. Scan on every PR
-safety check --json
-pip-audit --desc
-
-# 2. Scheduled scan (daily/weekly)
-# GitHub Actions cron / GitLab scheduled pipeline
-
-# 3. Automated PR for updates
-# dependabot.yml / renovate.json
-
-# 4. Block merge on critical vulns
-# Required status check
 ```
 
 ---

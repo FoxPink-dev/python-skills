@@ -133,7 +133,51 @@ with Progress() as progress:
 
 ---
 
-## Decision Rules
+## When NOT to Use
+
+| Scenario | Why | Better Alternative |
+|----------|-----|-------------------|
+| Typer for deep nested subcommands | Typer struggles with deep nesting | Use `click` |
+| argparse for complex CLIs | No auto-generated help groups | Use `click` |
+| Click for 1-3 command scripts | Overhead | Use `argparse` |
+| Rich for simple output | Dependency overhead | Use `print()` |
+
+### Common Failure Modes
+
+| Failure | Symptom | Fix |
+|---------|---------|-----|
+| Missing `--help` | Users can't discover options | Add `--help` / `--version` |
+| No exit codes | Scripts fail silently | Use 0=success, 1=error, 130=interrupt |
+| Logic in `__main__.py` | Can't test CLI logic | Extract to entry point function |
+| Not testing CLI | Broken CLI on changes | Use `CliRunner` / `typer.testing.CliRunner` |
+| Global state | Tests interfere | Use context/state passing |
+
+### Anti-Pattern
+
+```python
+# NEVER: Logic in __main__.py
+# __main__.py
+import sys
+args = sys.argv[1:]  # Can't test
+result = process(args)  # Can't mock
+
+# NEVER: No testing
+# No test_cli.py exists
+
+# BETTER: Testable structure
+# cli.py
+def main(argv: list[str] | None = None) -> int:
+    parser = create_parser()
+    args = parser.parse_args(argv)
+    return run(args)
+
+# test_cli.py
+from click.testing import CliRunner
+def test_process():
+    runner = CliRunner()
+    result = runner.invoke(cli, ["process", "input.txt"])
+    assert result.exit_code == 0
+```
 
 | Complexity | Tool |
 |------------|------|

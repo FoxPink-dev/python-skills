@@ -131,7 +131,44 @@ def test_dst():
 
 ---
 
-## Decision Rules
+## When NOT to Use
+
+| Scenario | Why | Better Alternative |
+|----------|-----|-------------------|
+| Testing every possible value | Impractical, slow | Use hypothesis for property testing |
+| Over-parameterized tests | Hard to read, slow | Focus on critical edges |
+| Edge cases for trivial functions | Low ROI | Skip for simple utilities |
+| Ignoring timezones | DST bugs, race conditions | Test timezone boundaries |
+
+### Common Failure Modes
+
+| Failure | Symptom | Fix |
+|---------|---------|-----|
+| Only testing happy path | Bugs in edge cases | Systematic edge case checklist |
+| Ignoring empty input | Crashes on `""`, `[]`, `{}` | Test empty collection/string |
+| Ignoring Unicode | Encoding errors, crashes | Test emoji, RTL, combining chars |
+| Ignoring concurrency | Race conditions, data corruption | Test thread safety |
+| Ignoring timezones | DST bugs, offset errors | Test timezone boundaries |
+| Missing off-by-one | Boundary errors | Test min, max, min-1, max+1 |
+
+### Anti-Pattern
+
+```python
+# NEVER: Only test happy path
+def test_process():
+    result = process([1, 2, 3])
+    assert result == [2, 4, 6]
+
+# BETTER: Systematic edge cases
+@pytest.mark.parametrize("input,expected", [
+    ([], []),           # Empty
+    ([1], [2]),         # Single
+    ([1, 2, 3], [2, 4, 6]),  # Normal
+    ([0, -1, 2], [0, -2, 4]),  # Zero/negative
+])
+def test_process_edges(input, expected):
+    assert process(input) == expected
+```
 
 | Function Input | Edge Cases to Test |
 |----------------|-------------------|

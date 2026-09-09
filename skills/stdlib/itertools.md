@@ -161,8 +161,8 @@ for key, group in itertools.groupby(sorted_data, key=keyfunc):
 ## Python 3.12+ Additions
 
 ```python
-itertools.batched(iterable, n)  # Built-in batching
-itertools.chunked(iterable, n)  # Alias for batched
+itertools.batched(iterable, n)  # Built-in batching (returns tuples)
+# For chunked lists, wrap: [list(batch) for batch in itertools.batched(data, n)]
 ```
 
 ---

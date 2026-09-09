@@ -3,28 +3,6 @@
 **Purpose**: Isolated Python environments for development and deployment.
 
 **When to use**: All Python development. Never install packages globally.
----
----
-name: engineering_virtual_environments
-purpose: Isolated Python environments for development and deployment
-category: engineering
-triggers:
-  - virtualenv
-  - venv
-  - uv
-  - poetry
-  - pdm
-  - conda
-  - environment
-  - isolation
-dependencies:
-  - engineering/dependency_management.md
-  - engineering/pyproject_toml.md
-  - engineering/packaging.md
-  - engineering/cli_apps.md
-priority: primary
-estimated_tokens: 1800
----
 
 ## Core Rules
 
@@ -77,12 +55,15 @@ pip install -r requirements.txt
 ### Lock Files
 ```bash
 # uv
-uv pip compile pyproject.toml -o requirements.txt
-uv pip compile pyproject.toml --extra dev -o requirements-dev.txt
-uv sync  # Uses uv.lock if exists
+uv lock  # Creates uv.lock
+uv sync  # Installs from lock file
+
+# Or generate requirements.txt
+uv pip compile requirements.in -o requirements.txt
+uv pip compile requirements.in --extra dev -o requirements-dev.txt
 
 # pip-tools
-pip-compile pyproject.toml -o requirements.txt
+pip-compile requirements.in -o requirements.txt
 pip-sync requirements.txt
 
 # poetry
