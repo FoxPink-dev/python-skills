@@ -91,7 +91,14 @@ class LockManager:
         if self.lock_file.exists():
             try:
                 data = json.loads(self.lock_file.read_text(encoding="utf-8"))
-                self._lock = LockState(**data)
+                targets_raw = data.pop("targets", {})
+                lock = LockState(**data)
+                for name, ts_data in targets_raw.items():
+                    files_raw = ts_data.pop("files", [])
+                    ts = TargetState(**ts_data)
+                    ts.files = [FileRecord(**f) for f in files_raw]
+                    lock.targets[name] = ts
+                self._lock = lock
                 return self._lock
             except Exception:
                 pass
