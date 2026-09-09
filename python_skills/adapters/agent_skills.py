@@ -334,6 +334,11 @@ class AgentSkillsAdapter(AgentAdapter):
                                     result.files_removed.append(
                                         str(item.relative_to(self.project_root))
                                     )
+                    # Remove the shared directory if empty
+                    if not dry_run and skills_dir.exists():
+                        remaining = list(skills_dir.iterdir())
+                        if not remaining:
+                            skills_dir.rmdir()
             elif skills_dir.exists():
                 # Non-shared agent_skills_dir — remove normally
                 for item in skills_dir.iterdir():
@@ -351,6 +356,8 @@ class AgentSkillsAdapter(AgentAdapter):
 
             if not dry_run:
                 self._update_lock_state(scope)
+                # Clear target state after uninstall
+                self.lock_manager.clear_target(self.target_name)
 
         except Exception as e:
             result.success = False

@@ -184,6 +184,15 @@ class LockManager:
         lock = self.load()
         return lock.targets.get(target)
 
+    def clear_target(self, target: str) -> bool:
+        """Clear all file records for a target. Returns True if target existed."""
+        lock = self.load()
+        if target in lock.targets:
+            del lock.targets[target]
+            self.save(lock)
+            return True
+        return False
+
     def update_canonical_hash(self, skills_root: Path) -> None:
         """Update the canonical skills hash."""
         lock = self.load()
