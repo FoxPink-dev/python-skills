@@ -216,7 +216,7 @@ class TestSharedAgentSkills:
         agents = temp_project / ".agents" / "skills"
         assert agents.exists()
         count = sum(1 for _ in agents.iterdir() if _.is_dir())
-        assert count == 67
+        assert count == 69
 
     def test_native_dirs_separate(self, temp_project, registry, lock_manager):
         for t in [Target.OPENCODE, Target.WINDSURF, Target.GEMINI]:
@@ -226,7 +226,7 @@ class TestSharedAgentSkills:
             p = temp_project / d
             assert p.exists()
             count = sum(1 for _ in p.iterdir() if _.is_dir())
-            assert count == 67
+            assert count == 69
 
     def test_uninstall_preserves_shared_for_other_consumers(self, temp_project, registry, lock_manager):
         for t in [Target.OPENCODE, Target.WINDSURF, Target.GEMINI]:
@@ -239,7 +239,7 @@ class TestSharedAgentSkills:
         agents = temp_project / ".agents" / "skills"
         assert agents.exists()
         count = sum(1 for _ in agents.iterdir() if _.is_dir())
-        assert count == 67
+        assert count == 69
         # Native dir should be cleaned
         assert not (temp_project / ".opencode" / "skills").exists() or \
                sum(1 for _ in (temp_project / ".opencode" / "skills").iterdir()) == 0
