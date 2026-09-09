@@ -1,13 +1,11 @@
 """Tests for AgentSkillsAdapter and target adapters."""
 import pytest
 from pathlib import Path
-import tempfile
-import shutil
-from python_skills.config import Target, Scope, get_adapter_capabilities, AdapterCapabilities
+from python_skills.config import Target
 from python_skills.skills.registry import get_registry
 from python_skills.state import LockManager
 from python_skills.adapters import get_adapter
-from python_skills.adapters.agent_skills import AgentSkillsAdapter, _skill_name_to_slug, _generate_skill_md
+from python_skills.adapters.agent_skills import _skill_name_to_slug, _generate_skill_md
 from python_skills.skills.metadata import SkillMetadata
 
 

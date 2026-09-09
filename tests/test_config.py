@@ -1,5 +1,4 @@
 """Tests for config module."""
-import pytest
 from python_skills.config import Target, Scope, AdapterCapabilities, get_adapter_capabilities
 
 

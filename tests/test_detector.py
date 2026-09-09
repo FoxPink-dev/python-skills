@@ -1,7 +1,6 @@
 """Tests for environment detector."""
 import pytest
-from pathlib import Path
-from python_skills.detector import EnvironmentDetector, detect_environment
+from python_skills.detector import detect_environment
 from python_skills.config import Target
 
 

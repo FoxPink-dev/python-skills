@@ -1,8 +1,7 @@
 """Tests for skill loader and metadata."""
-import pytest
 from pathlib import Path
 from python_skills.skills.loader import SkillLoader
-from python_skills.skills.metadata import load_skill_metadata, SkillMetadata
+from python_skills.skills.metadata import load_skill_metadata
 
 
 SKILLS_ROOT = Path(__file__).resolve().parent.parent / "skills"
