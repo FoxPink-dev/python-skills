@@ -281,6 +281,41 @@ def detect(ctx: click.Context, scope: str, project_root: Path):
 
 
 @main.command()
+@click.option("--category", "-c", help="Filter by category")
+def list(category: str):
+    """List available skills and supported targets."""
+    from python_skills.skills.registry import get_registry
+
+    registry = get_registry()
+
+    # List targets
+    console.print(Panel.fit(
+        "[bold]Supported Targets (16)[/bold]\n"
+        + "\n".join(f"  {t.value}" for t in Target),
+        title="Targets"
+    ))
+
+    # List skills
+    if category:
+        skills = registry.get_skills_by_category(category)
+        title = f"Skills in '{category}'"
+    else:
+        skills = registry.get_all_skills()
+        title = f"All Skills ({len(skills)})"
+
+    table = Table(title=title)
+    table.add_column("Name", style="cyan")
+    table.add_column("Category", style="green")
+    table.add_column("Description", style="dim")
+
+    for skill in sorted(skills, key=lambda s: s.name):
+        desc = skill.description[:60] + "..." if len(skill.description) > 60 else skill.description
+        table.add_row(skill.name, skill.category, desc)
+
+    console.print(table)
+
+
+@main.command()
 def version():
     """Show version."""
     from python_skills import __version__
