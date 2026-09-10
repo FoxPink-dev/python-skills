@@ -8,6 +8,7 @@ from .routing import SkillRouter, RoutingResult
 from .verification import VerificationPlanner, VerificationPlan, VerificationLevel
 from .recovery import RecoveryRouter, FailureTaxonomy, RecoveryResult
 from .explainability import ExplainabilityEngine, ConfidenceAssessor, RoutingExplanation
+from .execution import ExecutionEngine, ExecutionContext, RecoveryContext, SkillContent
 
 __all__ = [
     "SkillRegistry",
@@ -28,4 +29,8 @@ __all__ = [
     "ExplainabilityEngine",
     "ConfidenceAssessor",
     "RoutingExplanation",
+    "ExecutionEngine",
+    "ExecutionContext",
+    "RecoveryContext",
+    "SkillContent",
 ]
