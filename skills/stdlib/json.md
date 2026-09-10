@@ -1,3 +1,19 @@
+---
+name: json
+purpose: JSON encoding/decoding with Python objects.
+category: stdlib
+triggers:
+  - json
+  - dumps
+  - loads
+  - encoder
+  - decoder
+  - serialization
+dependencies: []
+related: []
+priority: supporting
+estimated_tokens: 1017
+---
 # Stdlib: json
 
 **Purpose**: JSON encoding/decoding with Python objects.

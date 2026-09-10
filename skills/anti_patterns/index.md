@@ -1,3 +1,18 @@
+---
+name: index
+purpose: Prevent generation of known anti-patterns. This is the master reference.
+category: anti_patterns
+triggers:
+  - anti-pattern
+  - bad-practice
+  - avoid
+  - common-mistake
+  - code-smell
+dependencies: []
+related: []
+priority: supporting
+estimated_tokens: 2420
+---
 # Anti-Patterns: Index
 
 **Purpose**: Prevent generation of known anti-patterns. This is the master reference.

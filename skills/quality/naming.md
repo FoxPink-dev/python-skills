@@ -1,3 +1,19 @@
+---
+name: naming
+purpose: Meaningful, consistent naming conventions.
+category: quality
+triggers:
+  - naming
+  - convention
+  - pep8
+  - snake-case
+  - pascal-case
+  - identifier
+dependencies: []
+related: []
+priority: supporting
+estimated_tokens: 1000
+---
 # Quality: Naming
 
 **Purpose**: Meaningful, consistent naming conventions.

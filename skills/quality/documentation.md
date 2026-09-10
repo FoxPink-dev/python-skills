@@ -1,3 +1,19 @@
+---
+name: documentation
+purpose: Document public APIs and non-obvious behavior appropriately.
+category: quality
+triggers:
+  - documentation
+  - docstring
+  - readme
+  - sphinx
+  - mkdocs
+  - api-docs
+dependencies: []
+related: []
+priority: supporting
+estimated_tokens: 1000
+---
 # Quality: Documentation
 
 **Purpose**: Document public APIs and non-obvious behavior appropriately.

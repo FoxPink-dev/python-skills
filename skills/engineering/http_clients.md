@@ -1,5 +1,5 @@
 ---
-name: engineering_http_clients
+name: http_clients
 purpose: HTTP client selection and usage patterns
 category: engineering
 triggers:
@@ -11,11 +11,17 @@ triggers:
   - webhook
   - download
 dependencies:
-  - generation/async_concurrency.md
-  - generation/error_handling.md
-  - engineering/configuration.md
-  - security/secrets.md
-  - testing/organization.md
+  - generation/async_concurrency
+  - generation/error_handling
+  - engineering/configuration
+  - security/secrets
+  - testing/organization
+related:
+  - generation/async_concurrency
+  - generation/error_handling
+  - engineering/configuration
+  - security/secrets
+  - testing/async_tests
 priority: primary
 estimated_tokens: 2500
 ---

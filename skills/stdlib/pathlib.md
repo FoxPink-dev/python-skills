@@ -1,3 +1,20 @@
+---
+name: pathlib
+purpose: Modern, object-oriented filesystem paths.
+category: stdlib
+triggers:
+  - pathlib
+  - path
+  - filesystem
+  - glob
+  - walk
+  - directory
+  - file
+dependencies: []
+related: []
+priority: supporting
+estimated_tokens: 1348
+---
 # Stdlib: pathlib
 
 **Purpose**: Modern, object-oriented filesystem paths.

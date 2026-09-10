@@ -1,3 +1,19 @@
+---
+name: logging
+purpose: Structured application logging.
+category: stdlib
+triggers:
+  - logging
+  - logger
+  - handler
+  - formatter
+  - level
+  - config
+dependencies: []
+related: []
+priority: supporting
+estimated_tokens: 1149
+---
 # Stdlib: logging
 
 **Purpose**: Structured application logging.

@@ -1,3 +1,18 @@
+---
+name: pyproject_toml
+purpose: Modern Python project configuration (PEP 621, 517, 518, 660).
+category: engineering
+triggers:
+  - pyproject
+  - toml
+  - build-system
+  - tool
+  - metadata
+dependencies: []
+related: []
+priority: primary
+estimated_tokens: 1592
+---
 # Engineering: pyproject.toml
 
 **Purpose**: Modern Python project configuration (PEP 621, 517, 518, 660).

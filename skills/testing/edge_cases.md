@@ -1,3 +1,25 @@
+---
+name: edge_cases
+purpose: Systematic edge case coverage for robust code
+category: testing
+triggers:
+  - edge
+  - boundary
+  - parameter
+  - hypothesis
+  - fuzz
+dependencies:
+  - testing/organization
+  - testing/parameterized
+  - security/input_validation
+  - generation/error_handling
+related:
+  - testing/parameterized
+  - testing/regression_tests
+  - security/input_validation
+priority: high
+estimated_tokens: 1500
+---
 # Testing: Edge Cases
 
 **Purpose**: Systematic edge case coverage for robust code.
@@ -230,5 +252,6 @@ def test_list_property(items: list[int]):
 
 - `testing/organization.md`
 - `testing/parameterized.md`
+- `testing/regression_tests.md`
 - `security/input_validation.md`
 - `generation/error_handling.md`

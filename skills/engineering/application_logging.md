@@ -1,3 +1,18 @@
+---
+name: application_logging
+purpose: Application-level logging setup and patterns.
+category: engineering
+triggers:
+  - logging
+  - logger
+  - loguru
+  - structlog
+  - structured-logging
+dependencies: []
+related: []
+priority: primary
+estimated_tokens: 1356
+---
 # Engineering: Logging (Application)
 
 **Purpose**: Application-level logging setup and patterns.

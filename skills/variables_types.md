@@ -1,3 +1,19 @@
+---
+name: variables_types
+purpose: Fundamental Python variable and type knowledge for code generation.
+category: skills
+triggers:
+  - variable
+  - type
+  - annotation
+  - assignment
+  - scope
+  - mutability
+dependencies: []
+related: []
+priority: supporting
+estimated_tokens: 1000
+---
 # Core: Variables and Types
 
 **Purpose**: Fundamental Python variable and type knowledge for code generation.

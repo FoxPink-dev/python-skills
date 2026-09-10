@@ -1,3 +1,19 @@
+---
+name: collections
+purpose: Specialized container datatypes beyond built-ins.
+category: stdlib
+triggers:
+  - collections
+  - deque
+  - defaultdict
+  - counter
+  - namedtuple
+  - chainmap
+dependencies: []
+related: []
+priority: supporting
+estimated_tokens: 1239
+---
 # Stdlib: collections
 
 **Purpose**: Specialized container datatypes beyond built-ins.

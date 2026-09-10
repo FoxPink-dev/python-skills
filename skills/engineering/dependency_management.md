@@ -1,3 +1,19 @@
+---
+name: dependency_management
+purpose: Rules for adding, updating, and managing dependencies.
+category: engineering
+triggers:
+  - dependency
+  - pip
+  - poetry
+  - uv
+  - requirements
+  - lockfile
+dependencies: []
+related: []
+priority: primary
+estimated_tokens: 1460
+---
 # Engineering: Dependency Management
 
 **Purpose**: Rules for adding, updating, and managing dependencies.

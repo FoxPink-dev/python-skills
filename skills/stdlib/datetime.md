@@ -1,3 +1,19 @@
+---
+name: datetime
+purpose: Date and time handling with timezone awareness.
+category: stdlib
+triggers:
+  - datetime
+  - date
+  - time
+  - timezone
+  - timedelta
+  - isoformat
+dependencies: []
+related: []
+priority: supporting
+estimated_tokens: 1053
+---
 # Stdlib: datetime
 
 **Purpose**: Date and time handling with timezone awareness.

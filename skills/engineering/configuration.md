@@ -1,3 +1,19 @@
+---
+name: configuration
+purpose: Application configuration management patterns.
+category: engineering
+triggers:
+  - config
+  - settings
+  - pydantic-settings
+  - env
+  - yaml
+  - toml
+dependencies: []
+related: []
+priority: primary
+estimated_tokens: 1429
+---
 # Engineering: Configuration
 
 **Purpose**: Application configuration management patterns.

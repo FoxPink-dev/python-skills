@@ -1,3 +1,19 @@
+---
+name: type_annotations
+purpose: Appropriate type hints — useful, not noise.
+category: quality
+triggers:
+  - type-annotation
+  - hint
+  - mypy
+  - pyright
+  - optional
+  - union
+dependencies: []
+related: []
+priority: supporting
+estimated_tokens: 1007
+---
 # Quality: Type Annotations
 
 **Purpose**: Appropriate type hints — useful, not noise.

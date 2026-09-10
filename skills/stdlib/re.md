@@ -1,3 +1,20 @@
+---
+name: re
+purpose: Pattern matching and text processing.
+category: stdlib
+triggers:
+  - regex
+  - re
+  - pattern
+  - match
+  - search
+  - sub
+  - compile
+dependencies: []
+related: []
+priority: supporting
+estimated_tokens: 1000
+---
 # Stdlib: re (Regular Expressions)
 
 **Purpose**: Pattern matching and text processing.

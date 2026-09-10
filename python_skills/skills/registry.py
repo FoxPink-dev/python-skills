@@ -72,6 +72,63 @@ class SkillRegistry:
         """Get raw SKILL.md content for a skill."""
         return self.loader.get_skill_content(name)
 
+    def get_related_skills(self, name: str) -> list[SkillMetadata]:
+        """Get skills related to the given skill."""
+        if not self._loaded:
+            self.load_all()
+        skill = self._skills.get(name)
+        if not skill:
+            return []
+        related = []
+        for rel_name in skill.related:
+            # Try exact match first
+            rel_skill = self._skills.get(rel_name)
+            if rel_skill:
+                related.append(rel_skill)
+                continue
+            # Try extracting just the skill name (after last /)
+            if "/" in rel_name:
+                short_name = rel_name.rsplit("/", 1)[-1]
+                rel_skill = self._skills.get(short_name)
+                if rel_skill:
+                    related.append(rel_skill)
+        return related
+
+    def find_composition(self, task_description: str) -> list[SkillMetadata]:
+        """Find skills relevant to a task based on triggers and keywords.
+        
+        Returns a list of skills sorted by relevance (most relevant first).
+        """
+        if not self._loaded:
+            self.load_all()
+        
+        task_lower = task_description.lower()
+        scored: list[tuple[int, SkillMetadata]] = []
+        
+        for skill in self._skills.values():
+            score = 0
+            # Check triggers
+            for trigger in skill.triggers:
+                if trigger.lower() in task_lower:
+                    score += 3
+            # Check name
+            if skill.name.lower() in task_lower:
+                score += 5
+            # Check category
+            if skill.category.lower() in task_lower:
+                score += 2
+            # Check description keywords
+            desc_words = skill.description.lower().split()
+            for word in desc_words:
+                if len(word) > 3 and word in task_lower:
+                    score += 1
+            
+            if score > 0:
+                scored.append((score, skill))
+        
+        scored.sort(key=lambda x: x[0], reverse=True)
+        return [skill for _, skill in scored]
+
     @property
     def count(self) -> int:
         if not self._loaded:

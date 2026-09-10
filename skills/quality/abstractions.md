@@ -1,3 +1,18 @@
+---
+name: abstractions
+purpose: When and how to create abstractions.
+category: quality
+triggers:
+  - abstraction
+  - interface
+  - protocol
+  - abc
+  - dependency-inversion
+dependencies: []
+related: []
+priority: supporting
+estimated_tokens: 1000
+---
 # Quality: Abstractions
 
 **Purpose**: When and how to create abstractions.

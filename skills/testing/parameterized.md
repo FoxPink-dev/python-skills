@@ -1,3 +1,17 @@
+---
+name: parameterized
+purpose: Run same test logic with multiple inputs.
+category: testing
+triggers:
+  - parameterized
+  - parametrize
+  - pytest
+  - data-driven
+dependencies: []
+related: []
+priority: supporting
+estimated_tokens: 1522
+---
 # Testing: Parameterized Tests
 
 **Purpose**: Run same test logic with multiple inputs.

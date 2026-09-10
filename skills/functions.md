@@ -1,5 +1,5 @@
 ---
-name: core_functions
+name: functions
 purpose: Python function definition, calling conventions, and patterns
 category: core
 triggers:
@@ -12,12 +12,13 @@ triggers:
   - closure
   - decorator
 dependencies:
-  - core/advanced_python.md
-  - generation/type_hints.md
-  - quality/functions.md
-  - anti_patterns/index.md
+  - advanced_python
+  - generation/type_hints
+  - quality/quality_functions
+  - anti_patterns/index
 priority: primary
 estimated_tokens: 2000
+related: []
 ---
 # Core: Functions
 

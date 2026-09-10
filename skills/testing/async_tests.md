@@ -1,5 +1,5 @@
 ---
-name: testing_async_tests
+name: async_tests
 purpose: Testing async code with pytest-asyncio
 category: testing
 triggers:
@@ -10,10 +10,14 @@ triggers:
   - async fixture
   - async mock
 dependencies:
-  - generation/async_concurrency.md
-  - testing/organization.md
-  - testing/fixtures_mocks.md
-  - testing/edge_cases.md
+  - generation/async_concurrency
+  - testing/organization
+  - testing/fixtures_mocks
+  - testing/edge_cases
+related:
+  - generation/async_concurrency
+  - testing/fixtures_mocks
+  - testing/edge_cases
 priority: supporting
 estimated_tokens: 2300
 ---

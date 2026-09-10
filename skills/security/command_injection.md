@@ -1,3 +1,18 @@
+---
+name: command_injection
+purpose: Prevent command injection when executing subprocesses.
+category: security
+triggers:
+  - command-injection
+  - shell-injection
+  - subprocess
+  - shell
+  - escape
+dependencies: []
+related: []
+priority: critical
+estimated_tokens: 1589
+---
 # Security: Command Injection Prevention
 
 **Purpose**: Prevent command injection when executing subprocesses.

@@ -1,3 +1,19 @@
+---
+name: statistics
+purpose: Basic statistical operations on numeric data.
+category: stdlib
+triggers:
+  - statistics
+  - mean
+  - median
+  - stdev
+  - variance
+  - quantiles
+dependencies: []
+related: []
+priority: supporting
+estimated_tokens: 1000
+---
 # Stdlib: statistics
 
 **Purpose**: Basic statistical operations on numeric data.

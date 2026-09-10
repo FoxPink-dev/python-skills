@@ -1,3 +1,18 @@
+---
+name: organization
+purpose: Structuring test suites for maintainability and speed.
+category: testing
+triggers:
+  - test-organization
+  - structure
+  - naming
+  - convention
+  - pytest
+dependencies: []
+related: []
+priority: supporting
+estimated_tokens: 1503
+---
 # Testing: Organization
 
 **Purpose**: Structuring test suites for maintainability and speed.

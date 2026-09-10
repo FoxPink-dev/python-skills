@@ -1,3 +1,18 @@
+---
+name: common_bugs
+purpose: Quick reference for frequent Python bug patterns.
+category: debugging
+triggers:
+  - bug
+  - common
+  - off-by-one
+  - mutable-default
+  - late-binding
+dependencies: []
+related: []
+priority: supporting
+estimated_tokens: 1120
+---
 # Debugging: Common Bugs
 
 **Purpose**: Quick reference for frequent Python bug patterns.

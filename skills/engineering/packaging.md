@@ -1,3 +1,20 @@
+---
+name: packaging
+purpose: Building and distributing Python packages.
+category: engineering
+triggers:
+  - packaging
+  - pyproject
+  - wheel
+  - sdist
+  - build
+  - publish
+  - pypi
+dependencies: []
+related: []
+priority: primary
+estimated_tokens: 1000
+---
 # Engineering: Packaging
 
 **Purpose**: Building and distributing Python packages.

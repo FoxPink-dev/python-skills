@@ -1,3 +1,19 @@
+---
+name: os_sys
+purpose: Operating system interfaces and Python runtime.
+category: stdlib
+triggers:
+  - os
+  - sys
+  - environment
+  - process
+  - platform
+  - path
+dependencies: []
+related: []
+priority: supporting
+estimated_tokens: 1136
+---
 # Stdlib: os and sys
 
 **Purpose**: Operating system interfaces and Python runtime.

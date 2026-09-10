@@ -1,3 +1,19 @@
+---
+name: subprocess
+purpose: Safe subprocess execution and process management.
+category: stdlib
+triggers:
+  - subprocess
+  - run
+  - popen
+  - shell
+  - pipe
+  - timeout
+dependencies: []
+related: []
+priority: supporting
+estimated_tokens: 1262
+---
 # Stdlib: subprocess
 
 **Purpose**: Safe subprocess execution and process management.

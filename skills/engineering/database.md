@@ -1,3 +1,29 @@
+---
+name: database
+purpose: Database access patterns and best practices
+category: engineering
+triggers:
+  - database
+  - sql
+  - query
+  - orm
+  - sqlite
+  - postgresql
+  - mysql
+  - migration
+dependencies:
+  - engineering/configuration
+  - generation/async_concurrency
+  - generation/error_handling
+  - testing/organization
+related:
+  - security/sql_injection
+  - security/input_validation
+  - generation/async_concurrency
+  - testing/regression_tests
+priority: primary
+estimated_tokens: 2200
+---
 # Engineering: Database
 
 **Purpose**: Database access patterns and best practices.
@@ -238,13 +264,34 @@ async def get_user(conn, user_id: int) -> UserRow | None:
 
 ---
 
-## Validation Considerations
+## Uncertainty Rules
 
-- Test with real database (testcontainers)
-- Verify parameterized queries used everywhere
-- Check connection pool sizing
-- Test migration up/down
-- Load test connection limits
+- Check the project's Python version before using `asyncio` database drivers
+- Verify installed driver version (asyncpg, psycopg, aiomysql) before using API-specific features
+- Inspect `pyproject.toml` or lockfile for database driver versions
+- Do not assume SQLAlchemy 2.0 API if project may use 1.x
+- Verify connection pool sizing matches database server limits
+
+---
+
+## Verification
+
+- Confirm all SQL queries use parameterized placeholders
+- Test with real database (testcontainers or local dev DB)
+- Verify connection pool is properly configured (min/max size)
+- Test migration up/down produces clean state
+- Load test to verify connection limits under stress
+- Check for N+1 queries in ORM usage (use `selectinload` or `joinedload`)
+
+---
+
+## Version-Aware Guidance
+
+- **asyncpg**: 0.25+ uses `asyncpg.create_pool()` with `min_size`/`max_size`; older versions use `min_size` only
+- **psycopg**: 3.0+ uses `psycopg.AsyncConnection`; 2.x uses `psycopg2`
+- **SQLAlchemy**: 2.0+ uses `async_sessionmaker`; 1.x uses `AsyncSession` directly
+- **Django**: 4.1+ has native async ORM; older versions need `sync_to_async`
+- Check `pyproject.toml` for exact driver versions before using API-specific features
 
 ---
 

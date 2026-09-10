@@ -1,3 +1,19 @@
+---
+name: argparse
+purpose: Command-line argument parsing.
+category: stdlib
+triggers:
+  - argparse
+  - cli
+  - argument
+  - parser
+  - subcommand
+  - flag
+dependencies: []
+related: []
+priority: supporting
+estimated_tokens: 1061
+---
 # Stdlib: argparse
 
 **Purpose**: Command-line argument parsing.

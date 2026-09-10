@@ -1,3 +1,18 @@
+---
+name: duplication
+purpose: Remove meaningful duplication without creating unnecessary abstractions.
+category: quality
+triggers:
+  - duplication
+  - dry
+  - copy-paste
+  - refactor
+  - extract
+dependencies: []
+related: []
+priority: supporting
+estimated_tokens: 1000
+---
 # Quality: Duplication
 
 **Purpose**: Remove meaningful duplication without creating unnecessary abstractions.

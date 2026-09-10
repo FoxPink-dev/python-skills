@@ -1,3 +1,20 @@
+---
+name: type_hints
+purpose: Modern Python typing guidance for code generation.
+category: generation
+triggers:
+  - type-hint
+  - annotation
+  - typing
+  - mypy
+  - optional
+  - union
+  - generic
+dependencies: []
+related: []
+priority: primary
+estimated_tokens: 1480
+---
 # Generation: Type Hints
 
 **Purpose**: Modern Python typing guidance for code generation.

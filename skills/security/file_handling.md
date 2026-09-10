@@ -1,3 +1,25 @@
+---
+name: file_handling
+purpose: Safe file operations to prevent information disclosure and corruption
+category: security
+triggers:
+  - file
+  - read
+  - write
+  - upload
+  - atomic
+  - temp
+dependencies:
+  - security/path_traversal
+  - security/secrets
+  - stdlib/pathlib
+related:
+  - security/path_traversal
+  - security/input_validation
+  - testing/regression_tests
+priority: high
+estimated_tokens: 1400
+---
 # Security: File Handling
 
 **Purpose**: Safe file operations to prevent information disclosure and corruption.
@@ -183,12 +205,23 @@ class SafeFileManager:
 
 ---
 
-## Validation Considerations
+## Change Scope
 
-- Test concurrent writes (atomicity)
+- Prefer the smallest correct change to file handling code
+- Preserve existing file paths and naming conventions unless task requires otherwise
+- Do not refactor unrelated file handling code
+- Preserve existing permission and ownership semantics
+- Avoid changing file size limits without explicit approval
+
+---
+
+## Verification
+
+- Test concurrent writes for atomicity
 - Test size limit enforcement
-- Test path traversal attempts
-- Test cleanup on exception
+- Test path traversal attempts are blocked
+- Test cleanup on exception (temp files removed)
+- Verify atomic write pattern (write to temp, then rename)
 
 ---
 

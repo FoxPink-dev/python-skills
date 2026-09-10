@@ -1,3 +1,18 @@
+---
+name: maintainability
+purpose: Avoid unnecessary coupling and complexity for long-term maintenance.
+category: quality
+triggers:
+  - maintainability
+  - complexity
+  - coupling
+  - cohesion
+  - solid
+dependencies: []
+related: []
+priority: supporting
+estimated_tokens: 1000
+---
 # Quality: Maintainability
 
 **Purpose**: Avoid unnecessary coupling and complexity for long-term maintenance.

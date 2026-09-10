@@ -1,3 +1,18 @@
+---
+name: validation_pipeline
+purpose: Concrete validation process for generated code.
+category: generation
+triggers:
+  - validation
+  - pydantic
+  - schema
+  - validate
+  - serialization
+dependencies: []
+related: []
+priority: primary
+estimated_tokens: 1557
+---
 # Generation: Validation Pipeline
 
 **Purpose**: Concrete validation process for generated code.

@@ -1,3 +1,18 @@
+---
+name: workflow
+purpose: Explicit code generation workflow for AI agents.
+category: generation
+triggers:
+  - workflow
+  - pipeline
+  - step
+  - stage
+  - orchestration
+dependencies: []
+related: []
+priority: primary
+estimated_tokens: 1226
+---
 # Generation: Workflow
 
 **Purpose**: Explicit code generation workflow for AI agents.

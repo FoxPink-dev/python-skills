@@ -1,3 +1,18 @@
+---
+name: project_structure
+purpose: Modern Python project layout conventions.
+category: engineering
+triggers:
+  - structure
+  - layout
+  - src-layout
+  - monorepo
+  - organization
+dependencies: []
+related: []
+priority: primary
+estimated_tokens: 1000
+---
 # Engineering: Project Structure
 
 **Purpose**: Modern Python project layout conventions.

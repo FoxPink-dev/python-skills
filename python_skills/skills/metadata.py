@@ -13,6 +13,7 @@ class SkillMetadata:
     description: str = ""
     triggers: list[str] = field(default_factory=list)
     dependencies: list[str] = field(default_factory=list)
+    related: list[str] = field(default_factory=list)
     priority: str = "primary"
     estimated_tokens: int = 1500
     raw_frontmatter: dict = field(default_factory=dict)
@@ -46,18 +47,45 @@ def parse_skill_frontmatter(content: str) -> tuple[dict, str]:
 
     # Simple YAML parsing for our needs
     frontmatter = {}
+    current_key = None
+    current_list = None
+    
     for line in frontmatter_text.split("\n"):
-        line = line.strip()
-        if not line or line.startswith("#"):
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
             continue
-        if ":" in line:
-            key, value = line.split(":", 1)
+        
+        # Check if this is a list item (starts with -)
+        if stripped.startswith("- ") and current_key and current_list is not None:
+            item = stripped[2:].strip().strip('"\'')
+            current_list.append(item)
+            continue
+        
+        # If we were building a list, save it
+        if current_list is not None:
+            frontmatter[current_key] = current_list
+            current_list = None
+            current_key = None
+        
+        if ":" in stripped:
+            key, value = stripped.split(":", 1)
             key = key.strip()
             value = value.strip().strip('"\'')
-            # Handle lists
+            
+            # Handle inline lists [item1, item2]
             if value.startswith("[") and value.endswith("]"):
                 value = [v.strip().strip('"\'') for v in value[1:-1].split(",")]
-            frontmatter[key] = value
+                frontmatter[key] = value
+            # Handle empty value (might be start of multi-line list)
+            elif not value:
+                current_key = key
+                current_list = []
+            else:
+                frontmatter[key] = value
+
+    # Save any pending list
+    if current_list is not None:
+        frontmatter[current_key] = current_list
 
     return frontmatter, remaining
 
@@ -145,6 +173,7 @@ def load_skill_metadata(skill_path: Path) -> SkillMetadata | None:
         description=description,
         triggers=frontmatter.get("triggers", []) if isinstance(frontmatter.get("triggers"), list) else [],
         dependencies=frontmatter.get("dependencies", []) if isinstance(frontmatter.get("dependencies"), list) else [],
+        related=frontmatter.get("related", []) if isinstance(frontmatter.get("related"), list) else [],
         priority=frontmatter.get("priority", "primary"),
         estimated_tokens=frontmatter.get("estimated_tokens", 1500) if isinstance(frontmatter.get("estimated_tokens"), int) else 1500,
         raw_frontmatter=frontmatter,

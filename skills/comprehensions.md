@@ -1,3 +1,18 @@
+---
+name: comprehensions
+purpose: Python comprehension syntax and appropriate usage.
+category: skills
+triggers:
+  - comprehension
+  - list-comp
+  - dict-comp
+  - set-comp
+  - generator-expression
+dependencies: []
+related: []
+priority: supporting
+estimated_tokens: 1000
+---
 # Core: Comprehensions
 
 **Purpose**: Python comprehension syntax and appropriate usage.

@@ -1,3 +1,22 @@
+---
+name: control_flow
+purpose: Python control flow constructs and patterns.
+category: skills
+triggers:
+  - if
+  - elif
+  - else
+  - for
+  - while
+  - break
+  - continue
+  - match
+  - case
+dependencies: []
+related: []
+priority: supporting
+estimated_tokens: 1201
+---
 # Core: Control Flow
 
 **Purpose**: Python control flow constructs and patterns.

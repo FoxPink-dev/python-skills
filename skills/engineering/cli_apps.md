@@ -1,3 +1,19 @@
+---
+name: cli_apps
+purpose: Building command-line interfaces with Python.
+category: engineering
+triggers:
+  - cli
+  - command-line
+  - argparse
+  - click
+  - typer
+  - terminal
+dependencies: []
+related: []
+priority: primary
+estimated_tokens: 1559
+---
 # Engineering: CLI Applications
 
 **Purpose**: Building command-line interfaces with Python.

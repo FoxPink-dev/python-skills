@@ -1,3 +1,26 @@
+---
+name: path_traversal
+purpose: Prevent directory traversal attacks when handling file paths
+category: security
+triggers:
+  - path
+  - traversal
+  - directory
+  - file
+  - upload
+  - archive
+dependencies:
+  - security/command_injection
+  - security/input_validation
+  - stdlib/pathlib
+  - stdlib/subprocess
+related:
+  - security/input_validation
+  - security/file_handling
+  - testing/regression_tests
+priority: critical
+estimated_tokens: 1500
+---
 # Security: Path Traversal Prevention
 
 **Purpose**: Prevent directory traversal attacks when handling file paths.
@@ -197,13 +220,15 @@ class PathValidator:
 
 ---
 
-## Validation Considerations
+## Verification
 
-- Test with traversal payloads
-- Test with symlinks
-- Test with URL encoding
-- Test with null bytes (`\0`)
-- `bandit` B108, B306 checks
+- Test with traversal payloads: `../../../etc/passwd`, `..\\..\\windows\\system32`
+- Test with URL-encoded traversal: `%2e%2e%2f`, `%2e%2e%5c`
+- Test with symlinks pointing outside base directory
+- Test with null bytes: `\0`
+- Test archive extraction with crafted zip/tar containing `../` paths
+- Run `bandit -r src/` and check for path traversal warnings (B108, B306)
+- Confirm all file operations use `Path.resolve()` + `is_relative_to()` before access
 
 ---
 
@@ -211,5 +236,6 @@ class PathValidator:
 
 - `security/command_injection.md`
 - `security/input_validation.md`
+- `security/file_handling.md`
 - `stdlib/pathlib.md`
 - `stdlib/subprocess.md`

@@ -1,3 +1,19 @@
+---
+name: modules_packages
+purpose: Python module system, imports, and package organization.
+category: engineering
+triggers:
+  - module
+  - package
+  - import
+  - __init__
+  - namespace
+  - distribution
+dependencies: []
+related: []
+priority: primary
+estimated_tokens: 1399
+---
 # Engineering: Modules and Packages
 
 **Purpose**: Python module system, imports, and package organization.

@@ -1,3 +1,20 @@
+---
+name: secrets
+purpose: Handle secrets (API keys, passwords, tokens) securely.
+category: security
+triggers:
+  - secret
+  - credential
+  - api-key
+  - password
+  - token
+  - env
+  - vault
+dependencies: []
+related: []
+priority: critical
+estimated_tokens: 1356
+---
 # Security: Secrets Management
 
 **Purpose**: Handle secrets (API keys, passwords, tokens) securely.

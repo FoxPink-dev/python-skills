@@ -1,3 +1,21 @@
+---
+name: oop
+purpose: Python OOP patterns, inheritance, composition, and protocols.
+category: skills
+triggers:
+  - class
+  - inheritance
+  - composition
+  - protocol
+  - dataclass
+  - abc
+  - magic-method
+  - slots
+dependencies: []
+related: []
+priority: supporting
+estimated_tokens: 1798
+---
 # Core: Object-Oriented Programming
 
 **Purpose**: Python OOP patterns, inheritance, composition, and protocols.

@@ -1,3 +1,18 @@
+---
+name: behavior_preservation
+purpose: Ensure refactoring doesn't change observable behavior.
+category: refactoring
+triggers:
+  - refactor
+  - behavior
+  - preserve
+  - test
+  - regression
+dependencies: []
+related: []
+priority: supporting
+estimated_tokens: 1097
+---
 # Refactoring: Behavior Preservation
 
 **Purpose**: Ensure refactoring doesn't change observable behavior.

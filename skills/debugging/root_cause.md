@@ -1,3 +1,18 @@
+---
+name: root_cause
+purpose: Systematic approach to finding and fixing bugs.
+category: debugging
+triggers:
+  - root-cause
+  - debug
+  - analysis
+  - 5-whys
+  - postmortem
+dependencies: []
+related: []
+priority: supporting
+estimated_tokens: 1184
+---
 # Debugging: Root Cause Analysis
 
 **Purpose**: Systematic approach to finding and fixing bugs.

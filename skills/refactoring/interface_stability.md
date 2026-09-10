@@ -1,3 +1,18 @@
+---
+name: interface_stability
+purpose: Maintain stable public APIs during refactoring.
+category: refactoring
+triggers:
+  - interface
+  - api
+  - stability
+  - contract
+  - breaking-change
+dependencies: []
+related: []
+priority: supporting
+estimated_tokens: 1092
+---
 # Refactoring: Interface Stability
 
 **Purpose**: Maintain stable public APIs during refactoring.

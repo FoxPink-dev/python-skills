@@ -1,3 +1,25 @@
+---
+name: error_handling
+purpose: Consistent, safe error handling patterns for code generation
+category: generation
+triggers:
+  - error
+  - exception
+  - try
+  - except
+  - raise
+  - result
+dependencies:
+  - generation/workflow
+  - quality/quality_functions
+related:
+  - security/input_validation
+  - testing/regression_tests
+  - generation/async_concurrency
+  - debugging/common_bugs
+priority: critical
+estimated_tokens: 2500
+---
 # Generation: Error Handling
 
 **Purpose**: Consistent, safe error handling patterns for code generation.
@@ -258,12 +280,23 @@ def handle_error(e: Exception) -> ErrorResponse:
 
 ---
 
-## Validation Considerations
+## Change Scope
 
-- Test error paths explicitly
-- Verify exception messages don't leak secrets
-- Check logging includes context for debugging
-- Ensure `Result` pattern doesn't hide errors
+- Prefer the smallest correct change to error handling
+- Preserve existing public exception interfaces unless task requires otherwise
+- Do not refactor unrelated error handling code
+- Avoid adding new exception classes when existing ones suffice
+- Preserve existing error messages unless they leak secrets
+
+---
+
+## Verification
+
+- Test error paths explicitly (not just happy path)
+- Verify exception messages don't leak secrets or internal details
+- Check logging includes context for debugging (extra fields, exception chain)
+- Ensure `Result` pattern doesn't hide errors silently
+- Run `bandit -r src/` and check for exception-related warnings
 
 ---
 

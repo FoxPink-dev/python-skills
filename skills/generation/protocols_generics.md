@@ -1,3 +1,18 @@
+---
+name: protocols_generics
+purpose: Advanced typing with protocols, generics, and variance.
+category: generation
+triggers:
+  - protocol
+  - generic
+  - typevar
+  - typing
+  - structural-subtyping
+dependencies: []
+related: []
+priority: primary
+estimated_tokens: 1462
+---
 # Generation: Protocols and Generics
 
 **Purpose**: Advanced typing with protocols, generics, and variance.

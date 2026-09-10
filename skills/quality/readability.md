@@ -1,3 +1,19 @@
+---
+name: readability
+purpose: Code should be easy for another developer to understand.
+category: quality
+triggers:
+  - readability
+  - clarity
+  - style
+  - format
+  - lint
+  - ruff
+dependencies: []
+related: []
+priority: supporting
+estimated_tokens: 1419
+---
 # Quality: Readability
 
 **Purpose**: Code should be easy for another developer to understand.

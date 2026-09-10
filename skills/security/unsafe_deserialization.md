@@ -1,3 +1,19 @@
+---
+name: unsafe_deserialization
+purpose: Prevent code execution via deserialization of untrusted data.
+category: security
+triggers:
+  - deserialization
+  - pickle
+  - yaml
+  - marshal
+  - json
+  - unsafe
+dependencies: []
+related: []
+priority: critical
+estimated_tokens: 1416
+---
 # Security: Unsafe Deserialization Prevention
 
 **Purpose**: Prevent code execution via deserialization of untrusted data.

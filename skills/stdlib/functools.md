@@ -1,3 +1,19 @@
+---
+name: functools
+purpose: Higher-order functions and function utilities.
+category: stdlib
+triggers:
+  - functools
+  - lru-cache
+  - wraps
+  - partial
+  - reduce
+  - singledispatch
+dependencies: []
+related: []
+priority: supporting
+estimated_tokens: 1431
+---
 # Stdlib: functools
 
 **Purpose**: Higher-order functions and function utilities.

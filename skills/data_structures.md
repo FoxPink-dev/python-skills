@@ -1,3 +1,21 @@
+---
+name: data_structures
+purpose: Python built-in data structures and their appropriate use.
+category: skills
+triggers:
+  - list
+  - dict
+  - set
+  - tuple
+  - deque
+  - heap
+  - dataclass
+  - namedtuple
+dependencies: []
+related: []
+priority: supporting
+estimated_tokens: 1293
+---
 # Core: Data Structures
 
 **Purpose**: Python built-in data structures and their appropriate use.

@@ -1,3 +1,18 @@
+---
+name: safe_refactoring
+purpose: Refactoring rules that preserve behavior and minimize risk.
+category: refactoring
+triggers:
+  - refactor
+  - safe
+  - test
+  - incremental
+  - behavior
+dependencies: []
+related: []
+priority: supporting
+estimated_tokens: 1137
+---
 # Refactoring: Safe Refactoring
 
 **Purpose**: Refactoring rules that preserve behavior and minimize risk.

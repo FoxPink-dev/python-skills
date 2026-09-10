@@ -2,6 +2,7 @@
 from pathlib import Path
 from python_skills.skills.loader import SkillLoader
 from python_skills.skills.metadata import load_skill_metadata
+from python_skills.skills.registry import SkillRegistry
 
 
 SKILLS_ROOT = Path(__file__).resolve().parent.parent / "skills"
@@ -64,3 +65,43 @@ class TestSkillMetadata:
     def test_get_skill_path_nonexistent(self):
         loader = SkillLoader(SKILLS_ROOT)
         assert loader.get_skill_path("nonexistent") is None
+
+    def test_load_skill_with_related_field(self):
+        path = SKILLS_ROOT / "security" / "sql_injection.md"
+        meta = load_skill_metadata(path)
+        assert meta is not None
+        assert meta.name == "sql_injection"
+        assert isinstance(meta.related, list)
+        assert "engineering/database" in meta.related
+
+
+class TestSkillRegistry:
+    def test_get_related_skills(self):
+        registry = SkillRegistry(SKILLS_ROOT)
+        related = registry.get_related_skills("sql_injection")
+        assert len(related) > 0
+        names = [s.name for s in related]
+        assert "database" in names
+
+    def test_get_related_skills_nonexistent(self):
+        registry = SkillRegistry(SKILLS_ROOT)
+        related = registry.get_related_skills("nonexistent_skill_xyz")
+        assert related == []
+
+    def test_find_composition(self):
+        registry = SkillRegistry(SKILLS_ROOT)
+        skills = registry.find_composition("I need to prevent SQL injection")
+        assert len(skills) > 0
+        names = [s.name for s in skills]
+        assert "sql_injection" in names
+
+    def test_find_composition_by_category(self):
+        registry = SkillRegistry(SKILLS_ROOT)
+        skills = registry.find_composition("security input validation")
+        assert len(skills) > 0
+        assert any(s.category == "security" for s in skills)
+
+    def test_find_composition_empty_query(self):
+        registry = SkillRegistry(SKILLS_ROOT)
+        skills = registry.find_composition("")
+        assert skills == []

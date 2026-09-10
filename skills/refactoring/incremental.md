@@ -1,3 +1,18 @@
+---
+name: incremental
+purpose: Make refactoring safe through small, verifiable increments.
+category: refactoring
+triggers:
+  - incremental
+  - refactor
+  - step
+  - small
+  - safe
+dependencies: []
+related: []
+priority: supporting
+estimated_tokens: 1104
+---
 # Refactoring: Incremental Changes
 
 **Purpose**: Make refactoring safe through small, verifiable increments.

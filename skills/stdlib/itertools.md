@@ -1,3 +1,19 @@
+---
+name: itertools
+purpose: Efficient iteration tools for combinatorics and data processing.
+category: stdlib
+triggers:
+  - itertools
+  - chain
+  - cycle
+  - islice
+  - combinations
+  - permutations
+dependencies: []
+related: []
+priority: supporting
+estimated_tokens: 1325
+---
 # Stdlib: itertools
 
 **Purpose**: Efficient iteration tools for combinatorics and data processing.

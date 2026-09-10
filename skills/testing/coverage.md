@@ -1,3 +1,18 @@
+---
+name: coverage
+purpose: Meaningful test coverage measurement and targets.
+category: testing
+triggers:
+  - coverage
+  - pytest-cov
+  - branch
+  - line
+  - report
+dependencies: []
+related: []
+priority: supporting
+estimated_tokens: 1037
+---
 # Testing: Coverage
 
 **Purpose**: Meaningful test coverage measurement and targets.

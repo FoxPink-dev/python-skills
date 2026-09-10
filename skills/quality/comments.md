@@ -1,3 +1,18 @@
+---
+name: comments
+purpose: When and how to comment code effectively.
+category: quality
+triggers:
+  - comment
+  - docstring
+  - type-comment
+  - inline
+  - documentation
+dependencies: []
+related: []
+priority: supporting
+estimated_tokens: 1100
+---
 # Quality: Comments
 
 **Purpose**: When and how to comment code effectively.

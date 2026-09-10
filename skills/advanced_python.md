@@ -1,3 +1,20 @@
+---
+name: advanced_python
+purpose: Iterators, generators, decorators, context managers, descriptors.
+category: skills
+triggers:
+  - iterator
+  - generator
+  - decorator
+  - context-manager
+  - descriptor
+  - metaclass
+  - init-subclass
+dependencies: []
+related: []
+priority: supporting
+estimated_tokens: 1430
+---
 # Core: Advanced Python
 
 **Purpose**: Iterators, generators, decorators, context managers, descriptors.

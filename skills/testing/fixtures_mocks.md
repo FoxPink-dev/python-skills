@@ -1,3 +1,18 @@
+---
+name: fixtures_mocks
+purpose: Effective test fixtures and mocking strategies.
+category: testing
+triggers:
+  - fixture
+  - mock
+  - patch
+  - monkeypatch
+  - factory
+dependencies: []
+related: []
+priority: supporting
+estimated_tokens: 1253
+---
 # Testing: Fixtures and Mocks
 
 **Purpose**: Effective test fixtures and mocking strategies.

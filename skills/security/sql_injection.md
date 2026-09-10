@@ -1,3 +1,23 @@
+---
+name: sql_injection
+purpose: Prevent SQL injection through proper query parameterization
+category: security
+triggers:
+  - sql
+  - query
+  - injection
+  - database
+  - parameterized
+dependencies:
+  - security/input_validation
+  - engineering/database
+related:
+  - engineering/database
+  - security/input_validation
+  - testing/regression_tests
+priority: critical
+estimated_tokens: 1800
+---
 # Security: SQL Injection Prevention
 
 **Purpose**: Prevent SQL injection through proper query parameterization.
@@ -212,12 +232,14 @@ class UserRepository:
 
 ---
 
-## Validation Considerations
+## Verification
 
-- Code review: grep for `f"SELECT` `f"INSERT` `f"UPDATE` `f"DELETE`
-- `bandit` SQL injection checks
-- SQLMap testing
-- ORM raw query audit
+- Grep codebase for `f"SELECT`, `f"INSERT`, `f"UPDATE`, `f"DELETE` — should find zero matches
+- Grep for `.format(` in SQL strings — should find zero matches
+- Confirm all database queries use parameterized placeholders (`$1`, `%s`, `:name`)
+- Run `bandit -r src/` and check for SQL injection warnings (B608)
+- Add a regression test with malicious input: `'; DROP TABLE users; --`
+- Verify ORM raw queries use parameter binding, not string formatting
 
 ---
 

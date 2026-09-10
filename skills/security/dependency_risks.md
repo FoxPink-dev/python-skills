@@ -1,3 +1,19 @@
+---
+name: dependency_risks
+purpose: Manage security risks from third-party dependencies.
+category: security
+triggers:
+  - dependency
+  - supply-chain
+  - vulnerability
+  - sca
+  - audit
+  - cve
+dependencies: []
+related: []
+priority: critical
+estimated_tokens: 1340
+---
 # Security: Dependency Risks
 
 **Purpose**: Manage security risks from third-party dependencies.

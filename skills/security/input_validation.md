@@ -1,5 +1,5 @@
 ---
-name: security_input_validation
+name: input_validation
 purpose: Validate all external input at system boundaries
 category: security
 triggers:
@@ -10,12 +10,15 @@ triggers:
   - sanitize
   - allowlist
 dependencies:
-  - security/sql_injection.md
-  - security/command_injection.md
-  - security/path_traversal.md
-  - security/unsafe_deserialization.md
-  - generation/error_handling.md
-priority: supporting
+  - security/command_injection
+  - security/unsafe_deserialization
+  - generation/error_handling
+related:
+  - security/sql_injection
+  - security/path_traversal
+  - security/command_injection
+  - testing/regression_tests
+priority: critical
 estimated_tokens: 1700
 ---
 # Security: Input Validation

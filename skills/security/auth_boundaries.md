@@ -1,3 +1,20 @@
+---
+name: auth_boundaries
+purpose: Enforce auth boundaries correctly in code.
+category: security
+triggers:
+  - auth
+  - authentication
+  - authorization
+  - boundary
+  - rbac
+  - jwt
+  - oauth
+dependencies: []
+related: []
+priority: critical
+estimated_tokens: 1797
+---
 # Security: Authentication/Authorization Boundaries
 
 **Purpose**: Enforce auth boundaries correctly in code.

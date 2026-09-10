@@ -1,3 +1,25 @@
+---
+name: regression_tests
+purpose: Prevent previously fixed bugs from reappearing
+category: testing
+triggers:
+  - regression
+  - bug
+  - fix
+  - golden
+  - property
+dependencies:
+  - testing/organization
+  - testing/edge_cases
+  - refactoring/safe_refactoring
+  - generation/error_handling
+related:
+  - testing/edge_cases
+  - testing/parameterized
+  - quality/abstractions
+priority: high
+estimated_tokens: 1500
+---
 # Testing: Regression Tests
 
 **Purpose**: Prevent previously fixed bugs from reappearing.
@@ -185,12 +207,14 @@ def test_config_merge_idempotent(config: dict):
 
 ---
 
-## Validation Considerations
+## Verification
 
-- Run regression suite on every PR
-- Tag regression tests for easy filtering: `pytest -m regression`
-- Golden master files version controlled
-- CI fails if regression tests fail
+- Every bug fix has a corresponding regression test
+- Regression test name includes issue/PR number for traceability
+- Regression test reproduces the exact trigger (not a simplified version)
+- Run `pytest -m regression` to verify all regression tests pass
+- Golden master files are version controlled and tested in CI
+- CI pipeline fails if any regression test fails
 
 ---
 

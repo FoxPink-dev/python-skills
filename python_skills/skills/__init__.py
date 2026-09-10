@@ -3,6 +3,8 @@
 from .loader import SkillLoader
 from .metadata import SkillMetadata, load_skill_metadata
 from .registry import SkillRegistry, get_registry, reset_registry
+from .graph import SkillGraph
+from .routing import SkillRouter, RoutingResult
 
 __all__ = [
     "SkillRegistry",
@@ -11,4 +13,7 @@ __all__ = [
     "SkillMetadata",
     "load_skill_metadata",
     "SkillLoader",
+    "SkillGraph",
+    "SkillRouter",
+    "RoutingResult",
 ]

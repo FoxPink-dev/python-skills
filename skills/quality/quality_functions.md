@@ -1,3 +1,19 @@
+---
+name: quality_functions
+purpose: Function design principles for maintainable code.
+category: quality
+triggers:
+  - function
+  - size
+  - focus
+  - parameter
+  - return
+  - pure
+dependencies: []
+related: []
+priority: supporting
+estimated_tokens: 1492
+---
 # Quality: Functions
 
 **Purpose**: Function design principles for maintainable code.

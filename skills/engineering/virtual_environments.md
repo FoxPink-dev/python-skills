@@ -1,3 +1,19 @@
+---
+name: virtual_environments
+purpose: Isolated Python environments for development and deployment.
+category: engineering
+triggers:
+  - venv
+  - virtualenv
+  - conda
+  - uv
+  - environment
+  - isolation
+dependencies: []
+related: []
+priority: primary
+estimated_tokens: 1000
+---
 # Engineering: Virtual Environments
 
 **Purpose**: Isolated Python environments for development and deployment.

@@ -1,3 +1,19 @@
+---
+name: inspection_techniques
+purpose: Tools and techniques for runtime inspection and debugging.
+category: debugging
+triggers:
+  - inspect
+  - debug
+  - pdb
+  - breakpoint
+  - trace
+  - profile
+dependencies: []
+related: []
+priority: supporting
+estimated_tokens: 1212
+---
 # Debugging: Inspection Techniques
 
 **Purpose**: Tools and techniques for runtime inspection and debugging.

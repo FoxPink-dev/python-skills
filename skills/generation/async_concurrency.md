@@ -1,5 +1,5 @@
 ---
-name: generation_async_concurrency
+name: async_concurrency
 purpose: Async/await patterns, concurrency primitives, and correct usage
 category: generation
 triggers:
@@ -12,10 +12,14 @@ triggers:
   - semaphore
   - queue
 dependencies:
-  - generation/error_handling.md
-  - testing/async_tests.md
-  - stdlib/subprocess.md
-  - engineering/http_clients.md
+  - generation/error_handling
+  - stdlib/subprocess
+related:
+  - testing/async_tests
+  - generation/error_handling
+  - engineering/database
+  - engineering/http_clients
+  - debugging/common_bugs
 priority: primary
 estimated_tokens: 2700
 ---
@@ -300,21 +304,33 @@ async def run_server():
 
 ---
 
+## Uncertainty Rules
+
+- Check Python version before using `TaskGroup` (3.11+) or `asyncio.timeout()` (3.10+)
+- Verify `pytest-asyncio` version for compatible test configuration
+- Do not assume `asyncio.to_thread` exists before Python 3.9
+- Inspect project dependencies for async HTTP client (aiohttp vs httpx)
+- Verify event loop policy matches deployment environment (uvloop vs default)
+
+---
+
+## Verification
+
+- Test cancellation scenarios propagate correctly
+- Test timeout behavior with `asyncio.wait_for` or `asyncio.timeout`
+- Check for resource leaks (open connections, files) in async context managers
+- Verify no blocking calls in async path (use `loop.run_in_executor` for blocking)
+- Run `pytest-asyncio` with `asyncio_mode = "auto"` for test collection
+- Test `TaskGroup` exception handling (all tasks cancelled on first exception)
+
+---
+
 ## Python Version Notes
 
 - 3.11+: `TaskGroup`, `except*`, `asyncio.timeout()`
 - 3.10+: `asyncio.timeout()` context manager
+- 3.9+: `asyncio.to_thread()`
 - 3.7+: `asyncio.run()`, `asyncio.create_task()`
-
----
-
-## Validation Considerations
-
-- Test cancellation scenarios
-- Test timeout behavior
-- Check for resource leaks (open connections, files)
-- Verify no blocking calls in async path
-- `pytest-asyncio` for testing
 
 ---
 
