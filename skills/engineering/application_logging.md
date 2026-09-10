@@ -92,20 +92,36 @@ log.info("user_login", user_id=123, ip="1.2.3.4")
 log.error("db_failed", error=str(e), query="SELECT ...")
 ```
 
-### Context Injection
+### Context Injection (Correlation IDs)
 ```python
 import contextvars
+import uuid
 
 request_id_var: contextvars.ContextVar[str | None] = contextvars.ContextVar("request_id", default=None)
+user_id_var: contextvars.ContextVar[str | None] = contextvars.ContextVar("user_id", default=None)
 
-class RequestIDFilter(logging.Filter):
+class CorrelationFilter(logging.Filter):
     def filter(self, record: logging.LogRecord) -> bool:
         record.request_id = request_id_var.get()
+        record.user_id = user_id_var.get()
         return True
 
-# In middleware
-request_id_var.set("req-123")
-log.info("processing")  # Includes request_id
+# In middleware (ASGI/WSGI)
+async def correlation_middleware(request, call_next):
+    request_id = request.headers.get("X-Request-ID", str(uuid.uuid4()))
+    request_id_var.set(request_id)
+    if hasattr(request, "user") and request.user:
+        user_id_var.set(str(request.user.id))
+    try:
+        response = await call_next(request)
+        response.headers["X-Request-ID"] = request_id
+        return response
+    finally:
+        request_id_var.set(None)
+        user_id_var.set(None)
+
+# Usage - all logs in this request include correlation IDs
+log.info("processing")  # Includes request_id, user_id
 ```
 
 ### Log Levels Guide
@@ -116,6 +132,105 @@ log.info("processing")  # Includes request_id
 | WARNING | Unexpected but handled (retry, fallback) |
 | ERROR | Operation failed (5xx, failed request) |
 | CRITICAL | System may stop (OOM, disk full) |
+
+---
+
+### Log Sanitization (Prevent Secret/PII Leakage)
+```python
+import re
+from urllib.parse import urlparse, urlunparse
+
+# Patterns that indicate sensitive data
+SENSITIVE_PATTERNS = [
+    (re.compile(r'(?i)(password|secret|token|key|api_key|apikey|auth|credential)\s*[:=]\s*\S+'), r'\1=***'),
+    (re.compile(r'(?i)bearer\s+\S+'), 'Bearer ***'),
+    (re.compile(r'(?i)authorization\s*:\s*\S+'), 'Authorization: ***'),
+    (re.compile(r'\b\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}\b'), '****-****-****-****'),  # Credit card
+    (re.compile(r'\b\d{3}-\d{2}-\d{4}\b'), '***-**-****'),  # SSN
+]
+
+def sanitize_log_message(message: str) -> str:
+    """Remove sensitive data from log messages."""
+    for pattern, replacement in SENSITIVE_PATTERNS:
+        message = pattern.sub(replacement, message)
+    return message
+
+def sanitize_url(url: str) -> str:
+    """Remove credentials from URLs."""
+    try:
+        parsed = urlparse(url)
+        if parsed.password:
+            netloc = f"{parsed.username}:***@{parsed.hostname}"
+            if parsed.port:
+                netloc += f":{parsed.port}"
+            return urlunparse(parsed._replace(netloc=netloc))
+    except Exception:
+        pass
+    return url
+
+class SanitizingFilter(logging.Filter):
+    """Filter that sanitizes log records before emission."""
+    def filter(self, record: logging.LogRecord) -> bool:
+        # Sanitize message
+        if isinstance(record.msg, str):
+            record.msg = sanitize_log_message(record.msg)
+        # Sanitize args
+        if record.args:
+            record.args = tuple(
+                sanitize_log_message(str(arg)) if isinstance(arg, str) else arg
+                for arg in record.args
+            )
+        # Sanitize extra fields
+        for key, value in record.__dict__.items():
+            if key not in {"name", "msg", "args", "created", "filename", "funcName",
+                          "levelname", "levelno", "lineno", "module", "msecs",
+                          "message", "name", "pathname", "process", "processName",
+                          "relativeCreated", "thread", "threadName", "exc_info",
+                          "exc_text", "stack_info", "getMessage"}:
+                if isinstance(value, str):
+                    record.__dict__[key] = sanitize_log_message(value)
+        return True
+
+# Usage
+handler = logging.StreamHandler()
+handler.addFilter(SanitizingFilter())
+handler.addFilter(CorrelationFilter())  # Also add correlation
+```
+
+### Production Gotchas
+
+| Gotcha | Symptom | Fix |
+|--------|---------|-----|
+| Secrets in logs | Credentials leaked in log aggregation | Add `SanitizingFilter` to all handlers |
+| PII in logs | GDPR violation | Sanitize email, IP, names in `extra` |
+| No correlation IDs | Can't trace request across services | Add `CorrelationFilter` in middleware |
+| Blocking logging | High latency under load | Use `QueueHandler` + `QueueListener` |
+| Missing log rotation | Disk full | Use `RotatingFileHandler` or external |
+| DEBUG in production | Performance, noise | Set root level to INFO, per-module DEBUG |
+
+### High-Volume Logging (Non-Blocking)
+```python
+import logging
+import logging.handlers
+import queue
+
+# Queue-based handler for high throughput
+log_queue: queue.Queue = queue.Queue(-1)
+queue_handler = logging.handlers.QueueHandler(log_queue)
+root = logging.getLogger()
+root.addHandler(queue_handler)
+
+# Listener runs in separate thread
+listener = logging.handlers.QueueListener(
+    log_queue,
+    logging.StreamHandler(),  # Or file handler
+    respect_handler_level=True,
+)
+listener.start()
+
+# On shutdown
+listener.stop()
+```
 
 ---
 

@@ -79,7 +79,11 @@ def parse_skill_frontmatter(content: str) -> tuple[dict, str]:
             
             # Handle inline lists [item1, item2]
             if value.startswith("[") and value.endswith("]"):
-                value = [v.strip().strip('"\'') for v in value[1:-1].split(",")]
+                inner = value[1:-1].strip()
+                if inner:
+                    value = [v.strip().strip('"\'') for v in inner.split(",")]
+                else:
+                    value = []
                 frontmatter[key] = value
             # Handle empty value (might be start of multi-line list)
             elif not value:

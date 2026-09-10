@@ -29,6 +29,8 @@ estimated_tokens: 1137
 3. **Run tests after each step** — Verify immediately
 4. **Preserve behavior** — No functional changes
 5. **Commit often** — Easy rollback
+6. **Guard clauses first** — Reduce nesting before extracting
+7. **Extract to protocol** — Depend on abstractions, not concretions
 
 ### Refactoring Workflow
 ```
@@ -67,17 +69,19 @@ def process_order(order):
     send_confirmation(order)
 ```
 
-#### Extract Class
+#### Extract Class (God Class Decomposition)
 ```python
-# Before — mixed responsibilities
-class OrderProcessor:
+# Before — God class with multiple responsibilities
+class OrderService:
     def process(self, order):
         self.validate(order)
         self.calculate_pricing(order)
         self.save(order)
         self.notify(order)
+        self.generate_report(order)  # Unrelated!
+        self.sync_inventory(order)   # Unrelated!
 
-# After — separate concerns
+# After — Separate concerns (Single Responsibility)
 class OrderValidator:
     def validate(self, order): ...
 
@@ -90,18 +94,27 @@ class OrderRepository:
 class NotificationService:
     def notify(self, order): ...
 
-class OrderProcessor:
-    def __init__(self, validator, calculator, repo, notifier):
+class ReportGenerator:          # Extracted: unrelated concern
+    def generate(self, order): ...
+
+class InventorySync:            # Extracted: unrelated concern
+    def sync(self, order): ...
+
+class OrderService:
+    def __init__(self, validator, calculator, repo, notifier, reporter, inventory):
         self.validator = validator
         self.calculator = calculator
         self.repo = repo
         self.notifier = notifier
+        self.reporter = reporter
+        self.inventory = inventory
     
     def process(self, order):
         self.validator.validate(order)
         self.calculator.calculate(order)
         self.repo.save(order)
         self.notifier.notify(order)
+        # Reporter and inventory called by caller if needed
 ```
 
 #### Replace Conditional with Polymorphism
@@ -138,13 +151,13 @@ def process_payment(payment):
     PROCESSORS[payment.type].process(payment)
 ```
 
-#### Introduce Parameter Object
+#### Introduce Parameter Object (Config Object)
 ```python
-# Before
+# Before — too many parameters
 def create_user(email, name, age, address, phone, preferences, referral):
     ...
 
-# After
+# After — config object
 @dataclass
 class UserData:
     email: str
@@ -157,6 +170,82 @@ class UserData:
 
 def create_user(data: UserData):
     ...
+```
+
+#### Guard Clauses (Reduce Nesting First)
+```python
+# Before — deeply nested
+def process_user(user):
+    if user.active:
+        if user.has_permission("write"):
+            data = fetch_data(user)
+            return transform(data)
+        else:
+            return Result.error("forbidden")
+    else:
+        return Result.error("inactive")
+
+# After — guard clauses, flat structure
+def process_user(user):
+    if not user.active:
+        return Result.error("inactive")
+    
+    if not user.has_permission("write"):
+        return Result.error("forbidden")
+    
+    # Main logic at base indent
+    data = fetch_data(user)
+    return Result.ok(transform(data))
+```
+
+---
+
+### Production Gotchas
+
+| Gotcha | Symptom | Fix |
+|--------|---------|-----|
+| No tests | Behavior changes silently | Write tests FIRST (characterization tests if legacy) |
+| Extracting too much | New abstractions leak, over-engineered | Wait for 3rd use case (Rule of Three) |
+| God class not fully split | Remaining methods still coupled | Extract ALL unrelated concerns |
+| Missing guard clauses | Deep nesting persists | Add guard clauses BEFORE extracting |
+| No feature flag | Can't rollback in production | Add feature flag for risky changes |
+| Performance regression | Slower after "cleanup" | Benchmark before/after |
+| Implicit behavior change | Tests pass but behavior differs | Property-based tests, snapshot tests |
+
+---
+
+### Verification
+
+```python
+# Characterization tests (for legacy code without tests)
+def test_legacy_behavior():
+    """Capture current behavior before refactoring."""
+    # Test with real inputs, record outputs
+    assert legacy_process(input_a) == expected_a
+    assert legacy_process(input_b) == expected_b
+
+# Property-based testing for refactoring
+from hypothesis import given, strategies as st
+
+@given(st.lists(st.integers()))
+def test_refactored_sort_preserves_elements(items):
+    """Refactored sort must preserve all elements."""
+    original = items[:]
+    refactored_sort(items)
+    assert sorted(original) == sorted(items)
+
+# Snapshot testing for complex outputs
+def test_report_generation_snapshot(snapshot):
+    """Refactored report must match previous output."""
+    result = generate_report(sample_data)
+    assert result == snapshot
+
+# Contract testing for extracted interfaces
+def test_repository_contract(repo: OrderRepository):
+    """Any implementation must satisfy contract."""
+    order = repo.save(sample_order)
+    assert repo.get(order.id) == order
+    assert repo.get(999999) is None
 ```
 
 ---
