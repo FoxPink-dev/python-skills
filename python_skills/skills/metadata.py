@@ -16,6 +16,11 @@ class SkillMetadata:
     related: list[str] = field(default_factory=list)
     priority: str = "primary"
     estimated_tokens: int = 1500
+    # Phase 13: Verification & Execution Intelligence
+    verification: list[str] = field(default_factory=list)
+    checks: list[str] = field(default_factory=list)
+    failure_types: list[str] = field(default_factory=list)
+    verification_levels: list[str] = field(default_factory=list)
     raw_frontmatter: dict = field(default_factory=dict)
     raw_content: str = ""
 
@@ -176,6 +181,10 @@ def load_skill_metadata(skill_path: Path) -> SkillMetadata | None:
         related=frontmatter.get("related", []) if isinstance(frontmatter.get("related"), list) else [],
         priority=frontmatter.get("priority", "primary"),
         estimated_tokens=frontmatter.get("estimated_tokens", 1500) if isinstance(frontmatter.get("estimated_tokens"), int) else 1500,
+        verification=frontmatter.get("verification", []) if isinstance(frontmatter.get("verification"), list) else [],
+        checks=frontmatter.get("checks", []) if isinstance(frontmatter.get("checks"), list) else [],
+        failure_types=frontmatter.get("failure_types", []) if isinstance(frontmatter.get("failure_types"), list) else [],
+        verification_levels=frontmatter.get("verification_levels", []) if isinstance(frontmatter.get("verification_levels"), list) else [],
         raw_frontmatter=frontmatter,
         raw_content=content_body,
     )
